@@ -1,9 +1,8 @@
 import Image from "next/image";
 import { S3Client, ListObjectsCommand } from "@aws-sdk/client-s3";
+import getConfig from "next/config";
 
 export const dynamicParams = false;
-
-const s3Client = new S3Client({ region: "ca-central-1" });
 
 type Bird = {
   species: string;
@@ -12,9 +11,10 @@ type Bird = {
 
 export async function generateStaticParams(): Promise<Bird[]> {
   const birds: Bird[] = [];
+  const s3Client = new S3Client({ region: process.env.BUCKET_REGION });
 
   const resp = await s3Client.send(
-    new ListObjectsCommand({ Bucket: process.env.IMAGE_BUCKET_NAME })
+    new ListObjectsCommand({ Bucket: process.env.BUCKET_NAME })
   );
 
   const respContents = resp.Contents;
@@ -34,7 +34,9 @@ export async function generateStaticParams(): Promise<Bird[]> {
 // using the `params` returned by `generateStaticParams`
 export default async function Page({ params }) {
   const bird = params;
-  const birdImageURL = `${process.env.IMAGE_BUCKET_URL}/${bird.species}-${bird.id}.jpg`;
+
+  const { publicRuntimeConfig } = getConfig();
+  const birdImageURL = `${publicRuntimeConfig.bucketUrl}/${bird.species}-${bird.id}.jpg`;
 
   return (
     <div>

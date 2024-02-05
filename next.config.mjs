@@ -5,10 +5,14 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "http",
-        hostname: "birddave.s3.ca-central-1.amazonaws.com",
+        protocol: "https",
+        hostname: `${process.env.BUCKET_NAME}.s3.${process.env.BUCKET_REGION}.amazonaws.com`,
       },
     ],
+  },
+  publicRuntimeConfig: {
+    // Will be available on both server and client
+    bucketUrl: `https://${process.env.BUCKET_NAME}.s3.${process.env.BUCKET_REGION}.amazonaws.com`,
   },
 };
 
