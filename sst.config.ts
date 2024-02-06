@@ -5,7 +5,7 @@ export default {
   config(_input) {
     return {
       name: "birddave",
-      region: "us-east-1",
+      region: "ca-central-1",
     };
   },
   stacks(app) {
