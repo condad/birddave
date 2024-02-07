@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { S3Client, ListObjectsCommand } from "@aws-sdk/client-s3";
+import { Bucket } from "sst/node/bucket";
 
 type Bird = {
   species: string;
@@ -8,20 +9,20 @@ type Bird = {
 
 async function getBirds(): Promise<Bird[]> {
   const birds: Bird[] = [];
-  const s3Client = new S3Client({ region: process.env.BUCKET_REGION });
+  const s3Client = new S3Client();
 
   const resp = await s3Client.send(
-    new ListObjectsCommand({ Bucket: process.env.BUCKET_NAME })
+    new ListObjectsCommand({ Bucket: Bucket.public.bucketName })
   );
 
-  const respContents = resp.Contents;
+  if (resp.Contents) {
+    for (const obj of resp.Contents as Array<any>) {
+      const file = obj.Key as string;
+      const [key, ..._] = file.split(".");
+      const [species, id] = key.split("-");
 
-  for (const obj of respContents as Array<any>) {
-    const file = obj.Key as string;
-    const [key, ..._] = file.split(".");
-    const [species, id] = key.split("-");
-
-    birds.push({ species, id });
+      birds.push({ species, id });
+    }
   }
 
   return birds;

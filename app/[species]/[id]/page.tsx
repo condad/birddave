@@ -1,8 +1,6 @@
 import Image from "next/image";
 import getConfig from "next/config";
 
-export const dynamicParams = false;
-
 export default async function Page({ params }) {
   const { publicRuntimeConfig } = getConfig();
   const birdImageURL = `${publicRuntimeConfig.bucketUrl}/${params.species}-${params.id}.jpg`;
