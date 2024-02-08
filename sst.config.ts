@@ -12,7 +12,19 @@ export default {
   },
   stacks(app) {
     app.stack(function Site({ stack }) {
-      const bucket = new Bucket(stack, "public");
+      const bucket = new Bucket(stack, "public", {
+        cdk: {
+          bucket: {
+            blockPublicAccess: {
+              blockPublicAcls: false,
+              blockPublicPolicy: false,
+              ignorePublicAcls: false,
+              restrictPublicBuckets: false,
+            },
+            publicReadAccess: true,
+          },
+        },
+      });
       const site = new NextjsSite(stack, "site", {
         path: ".",
         bind: [bucket],
