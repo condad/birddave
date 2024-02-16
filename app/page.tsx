@@ -8,12 +8,11 @@ type Bird = {
 };
 
 async function getBirds(): Promise<Bird[]> {
+  // TODO: This function should run on every request, not just at build time.
   const birds: Bird[] = [];
   const s3Client = new S3Client();
 
-  const resp = await s3Client.send(
-    new ListObjectsCommand({ Bucket: Bucket.public.bucketName })
-  );
+  const resp = await s3Client.send(new ListObjectsCommand({ Bucket: Bucket.public.bucketName }));
 
   if (resp.Contents) {
     for (const obj of resp.Contents as Array<any>) {
