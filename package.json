@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "sst bind next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "sst bind --stage dev --profile personal next dev",
+    "build": "sst bind --stage dev --profile personal next build",
+    "start": "sst bind --stage dev --profile personal next start",
     "lint": "next lint"
   },
   "dependencies": {
