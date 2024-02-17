@@ -25,6 +25,7 @@ export default {
           },
         },
       });
+
       const site = new NextjsSite(stack, "site", {
         path: ".",
         bind: [bucket],
@@ -35,6 +36,7 @@ export default {
       });
 
       stack.addOutputs({
+        StackName: stack.stackName,
         SiteUrl: site.url,
         BucketName: bucket.bucketName,
         Region: REGION,
