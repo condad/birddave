@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "sst bind --stage dev --profile personal next dev",
     "build": "sst bind --stage prod --profile personal next build",
+    "deploy": "sst bind --stage prod --profile personal sst deploy",
+    "diff": "sst bind --stage prod --profile personal sst diff",
     "lint": "next lint"
   },
   "dependencies": {
