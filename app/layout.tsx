@@ -16,7 +16,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className="{inter.className} mx-64 flex flex-col justify-between">
+        <header className="mt-5 text-slate-700 flex flex-row justify-between">
+          <a href="/" className="text-5xl">
+            BirdDave 🦜
+          </a>
+
+          <a href="/upload">
+            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Upload</button>
+          </a>
+        </header>
+
+        <main className="mt-10 justify-center">{children}</main>
+
+        <footer className="mt-10 text-center">The end</footer>
+      </body>
     </html>
   );
 }

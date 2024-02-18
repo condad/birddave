@@ -1,5 +1,5 @@
-import Image from "next/image";
 import getConfig from "next/config";
+import Image from "next/image";
 
 export default async function Page({ params }) {
   const { publicRuntimeConfig } = getConfig();
@@ -7,8 +7,7 @@ export default async function Page({ params }) {
 
   return (
     <div>
-      <h1>Species: {params.species.toUpperCase()}</h1>
-      <Image src={birdImageURL} alt="" height="100" width="150" />
+      <Image src={birdImageURL} alt="" width={1000} height={1000} />
     </div>
   );
 }
