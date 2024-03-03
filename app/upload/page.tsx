@@ -1,5 +1,9 @@
 import { Bucket } from "sst/node/bucket";
+import { Table } from "sst/node/table";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { v4 as uuidv4 } from "uuid";
 
 export default async function Page() {
   async function uploadPicture(formData: FormData) {
@@ -7,22 +11,34 @@ export default async function Page() {
 
     const file = formData.get("file") as File;
     const species = formData.get("species") as string;
-    const number = formData.get("number") as string;
 
     const fileArrayBuffer = await file.arrayBuffer();
     const fileBuffer = Buffer.from(fileArrayBuffer);
 
-    const client = new S3Client();
+    const id = uuidv4();
+
+    const s3Client = new S3Client();
     const command = new PutObjectCommand({
       Body: fileBuffer,
       Bucket: Bucket.public.bucketName,
-      Key: `${species}-${number}.jpg`,
+      Key: id,
       ContentType: file.type,
     });
 
-    const response = await client.send(command);
+    const dbClient = new DynamoDBClient();
+    const insertCommand = new PutCommand({
+      TableName: Table.table.tableName,
+      Item: {
+        id: id,
+        species,
+      },
+    });
 
-    console.log(response);
+    const s3Response = await s3Client.send(command);
+    const dbResponse = await dbClient.send(insertCommand);
+
+    console.log("s3 response", s3Response);
+    console.log("dynamobdb response", dbResponse);
   }
 
   return (
@@ -43,16 +59,6 @@ export default async function Page() {
       </label>
       <input
         name="species"
-        type="text"
-        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-      />
-
-      <br />
-      <label htmlFor="number" className="block text-gray-700 text-sm font-bold mb-2">
-        Number
-      </label>
-      <input
-        name="number"
         type="text"
         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
       />

@@ -1,5 +1,5 @@
 import { SSTConfig } from "sst";
-import { Bucket, NextjsSite } from "sst/constructs";
+import { Bucket, NextjsSite, Table } from "sst/constructs";
 
 const REGION = "ca-central-1";
 
@@ -26,9 +26,17 @@ export default {
         },
       });
 
+      const table = new Table(stack, "table", {
+        fields: {
+          id: "string",
+          species: "string",
+        },
+        primaryIndex: { partitionKey: "id" },
+      });
+
       const site = new NextjsSite(stack, "site", {
         path: ".",
-        bind: [bucket],
+        bind: [bucket, table],
         environment: {
           BUCKET_NAME: bucket.bucketName,
           BUCKET_REGION: REGION,

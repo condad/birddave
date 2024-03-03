@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { S3Client, ListObjectsCommand } from "@aws-sdk/client-s3";
-import { Bucket } from "sst/node/bucket";
+import { Table } from "sst/node/table";
+import { ScanCommand } from "@aws-sdk/lib-dynamodb";
 import getConfig from "next/config";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import Image from "next/image";
 
 type Bird = {
@@ -11,22 +12,10 @@ type Bird = {
 
 async function getBirds(): Promise<Bird[]> {
   // TODO: This function should run on every request, not just at build time.
-  const birds: Bird[] = [];
-  const s3Client = new S3Client();
+  const dbClient = new DynamoDBClient();
 
-  const resp = await s3Client.send(new ListObjectsCommand({ Bucket: Bucket.public.bucketName }));
-
-  if (resp.Contents) {
-    for (const obj of resp.Contents as Array<any>) {
-      const file = obj.Key as string;
-      const [key, ..._] = file.split(".");
-      const [species, id] = key.split("-");
-
-      birds.push({ species, id });
-    }
-  }
-
-  return birds;
+  const resp = await dbClient.send(new ScanCommand({ TableName: Table.table.tableName }));
+  return resp.Items as Bird[];
 }
 
 export default async function Home() {
@@ -37,10 +26,10 @@ export default async function Home() {
     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
       {birds.map((bird) => (
         <div key={bird.id} className="h-auto max-w-full rounded-lg sm:w-96 dark:bg-gray-700">
-          <Link href={`/${bird.species}/${bird.id}`}>
+          <Link href={`/${bird.id}`}>
             <Image
               className="h-auto w-auto rounded-lg"
-              src={`${publicRuntimeConfig.bucketUrl}/${bird.species}-${bird.id}.jpg`}
+              src={`${publicRuntimeConfig.bucketUrl}/${bird.id}`}
               width={500}
               height={500}
               alt=""

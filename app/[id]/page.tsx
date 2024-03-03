@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default async function Page({ params }) {
   const { publicRuntimeConfig } = getConfig();
-  const birdImageURL = `${publicRuntimeConfig.bucketUrl}/${params.species}-${params.id}.jpg`;
+  const birdImageURL = `${publicRuntimeConfig.bucketUrl}/${params.id}`;
 
   return (
     <div>
