@@ -1,5 +1,5 @@
 import { SSTConfig } from "sst";
-import { Bucket, NextjsSite, Table } from "sst/constructs";
+import { Cognito, Bucket, NextjsSite, Table } from "sst/constructs";
 
 const REGION = "ca-central-1";
 
@@ -12,6 +12,10 @@ export default {
   },
   stacks(app) {
     app.stack(function Site({ stack }) {
+      const auth = new Cognito(stack, "auth", {
+        login: ["email"],
+      });
+
       const bucket = new Bucket(stack, "public", {
         cdk: {
           bucket: {
