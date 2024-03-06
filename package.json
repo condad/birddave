@@ -3,12 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "sst bind --stage dev --profile personal next dev",
-    "sst-dev": "sst bind --stage dev --profile personal sst dev",
-    "build-dev": "sst bind --stage dev --profile personal next build",
-    "build": "sst bind --stage prod --profile personal next build",
-    "deploy": "sst bind --stage prod --profile personal sst deploy",
-    "diff": "sst bind --stage prod --profile personal sst diff",
+    "next-dev": "sst bind --stage dev next dev",
+    "sst-dev": "sst bind --stage dev sst dev",
+    "prod-deploy": "sst bind --stage prod sst deploy",
+    "dev-diff": "sst bind --stage prod sst diff",
+    "prod-diff": "sst bind --stage prod sst diff",
     "lint": "next lint"
   },
   "dependencies": {
