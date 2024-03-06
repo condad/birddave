@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "sst bind --stage dev --profile personal next dev",
+    "sst-dev": "sst bind --stage dev --profile personal sst dev",
     "build-dev": "sst bind --stage dev --profile personal next build",
     "build": "sst bind --stage prod --profile personal next build",
     "deploy": "sst bind --stage prod --profile personal sst deploy",
