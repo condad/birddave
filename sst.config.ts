@@ -1,5 +1,6 @@
 import { SSTConfig } from "sst";
 import { Cognito, Bucket, NextjsSite, Table } from "sst/constructs";
+import { UserPool } from "aws-cdk-lib/aws-cognito";
 
 const REGION = "ca-central-1";
 
@@ -12,8 +13,30 @@ export default {
   },
   stacks(app) {
     app.stack(function Site({ stack }) {
+      const pool = new UserPool(stack, "userPool");
+      const client = pool.addClient("client", {
+        oAuth: {
+          flows: {
+            implicitCodeGrant: true,
+          },
+          callbackUrls: ["http://localhost:300"],
+        },
+      });
+      const domain = pool.addDomain("birddave", {
+        cognitoDomain: {
+          domainPrefix: "birddave",
+        },
+      });
+
+      const signInUrl = domain.signInUrl(client, {
+        redirectUri: "http://localhost:300", // must be a URL configured under 'callbackUrls' with the client
+      });
+
       const auth = new Cognito(stack, "auth", {
-        login: ["email"],
+        cdk: {
+          userPool: pool,
+          userPoolClient: client,
+        },
       });
 
       const bucket = new Bucket(stack, "public", {
