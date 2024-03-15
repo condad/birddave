@@ -13,13 +13,19 @@ export default {
   },
   stacks(app) {
     app.stack(function Site({ stack }) {
-      const pool = new UserPool(stack, "userPool");
+      const pool = new UserPool(stack, "userPool", {
+        selfSignUpEnabled: true,
+        signInAliases: {
+          email: true,
+        },
+        autoVerify: { email: true },
+      });
       const client = pool.addClient("client", {
         oAuth: {
           flows: {
             implicitCodeGrant: true,
           },
-          callbackUrls: ["http://localhost:300"],
+          callbackUrls: ["http://localhost:3000"],
         },
       });
       const domain = pool.addDomain("birddave", {
@@ -29,7 +35,7 @@ export default {
       });
 
       const signInUrl = domain.signInUrl(client, {
-        redirectUri: "http://localhost:300", // must be a URL configured under 'callbackUrls' with the client
+        redirectUri: "http://localhost:3000", // must be a URL configured under 'callbackUrls' with the client
       });
 
       const auth = new Cognito(stack, "auth", {
@@ -65,8 +71,7 @@ export default {
         path: ".",
         bind: [bucket, table],
         environment: {
-          BUCKET_NAME: bucket.bucketName,
-          BUCKET_REGION: REGION,
+          COGNITO_SIGN_IN_URL: signInUrl,
         },
       });
 

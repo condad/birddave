@@ -1,3 +1,5 @@
+import { Bucket } from "sst/node/bucket";
+
 /**
  * @type {import('next').NextConfig}
  * */
@@ -6,20 +8,19 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: `${process.env.BUCKET_NAME}.s3.${process.env.BUCKET_REGION}.amazonaws.com`,
+        hostname: `${Bucket.public.bucketName}.s3.amazonaws.com`,
       },
     ],
   },
   publicRuntimeConfig: {
     // Will be available on both server and client
-    bucketUrl: `https://${process.env.BUCKET_NAME}.s3.${process.env.BUCKET_REGION}.amazonaws.com`,
+    bucketUrl: `https://${Bucket.public.bucketName}.s3.amazonaws.com`,
   },
   redirects: async () => {
     return [
       {
         source: "/login",
-        destination:
-          "https://birddave.auth.ca-central-1.amazoncognito.com/oauth2/authorize?client_id=dbkec3fspgno0e19pjnp0bkf9&response_type=token&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri=http%3A%2F%2Flocalhost%3A300",
+        destination: process.env.COGNITO_SIGN_IN_URL,
         permanent: true,
       },
     ];
