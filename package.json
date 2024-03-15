@@ -5,6 +5,7 @@
   "scripts": {
     "next-dev": "sst bind --stage dev next dev",
     "sst-dev": "sst bind --stage dev sst dev",
+    "build": "sst bind --stage dev next build",
     "prod-deploy": "sst bind --stage prod sst deploy",
     "dev-diff": "sst bind --stage prod sst diff",
     "prod-diff": "sst bind --stage prod sst diff",
