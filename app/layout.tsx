@@ -22,7 +22,6 @@ export default function RootLayout({
             BirdDave 🦜
           </a>
 
-          <a href="/login">Login</a>
           <a href="/upload">
             <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Upload</button>
           </a>

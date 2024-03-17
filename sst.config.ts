@@ -25,7 +25,7 @@ export default {
           flows: {
             implicitCodeGrant: true,
           },
-          callbackUrls: ["http://localhost:3000"],
+          callbackUrls: ["http://localhost:3000", "http://localhost:3000/upload"],
         },
       });
       const domain = pool.addDomain("birddave", {
@@ -35,7 +35,7 @@ export default {
       });
 
       const signInUrl = domain.signInUrl(client, {
-        redirectUri: "http://localhost:3000", // must be a URL configured under 'callbackUrls' with the client
+        redirectUri: "http://localhost:3000/upload", // must be a URL configured under 'callbackUrls' with the client
       });
 
       const auth = new Cognito(stack, "auth", {
@@ -78,6 +78,8 @@ export default {
       stack.addOutputs({
         StackName: stack.stackName,
         SiteUrl: site.url,
+        ClientId: client.userPoolClientId,
+        CognitoSignInUrl: signInUrl,
         BucketName: bucket.bucketName,
         Region: REGION,
       });
