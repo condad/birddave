@@ -4,11 +4,9 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { v4 as uuidv4 } from "uuid";
-import dynamic from "next/dynamic";
+import { UploadForm } from "./form";
 
-const UploadForm = dynamic<{}>(() => import("./form"), { ssr: false });
-
-export default async function Page() {
+export default function Page() {
   async function uploadPicture(formData: FormData) {
     "use server";
 
@@ -44,7 +42,7 @@ export default async function Page() {
   }
 
   return (
-    <div>
+    <div className="container mx-auto">
       <UploadForm upload={uploadPicture}></UploadForm>
     </div>
   );

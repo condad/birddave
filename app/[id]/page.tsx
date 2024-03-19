@@ -29,10 +29,12 @@ export default async function Page({ params }) {
   const userEmail = userResp.UserAttributes[2].Value;
 
   return (
-    <div>
-      <h2>User: {userEmail}</h2>
-      <h2>Species: {dbResp.Item?.species}</h2>
-      <Image src={birdImageURL} alt="" width={1000} height={1000} />
+    <div className="container mx-auto">
+      <div className="w-full mb-4">
+        <h2>User: {userEmail}</h2>
+        <h2>Species: {dbResp.Item?.species}</h2>
+      </div>
+      <Image src={birdImageURL} alt="" width={1000} height={1000} className="w-full" layout="responsive" />
     </div>
   );
 }
