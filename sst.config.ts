@@ -72,12 +72,14 @@ export default {
         bind: [bucket, table],
         environment: {
           COGNITO_SIGN_IN_URL: signInUrl,
+          COGNITO_USER_POOL_ID: pool.userPoolId,
         },
       });
 
       stack.addOutputs({
         StackName: stack.stackName,
         SiteUrl: site.url,
+        UserPoolId: pool.userPoolId,
         ClientId: client.userPoolClientId,
         CognitoSignInUrl: signInUrl,
         BucketName: bucket.bucketName,

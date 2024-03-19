@@ -8,6 +8,7 @@ import Image from "next/image";
 type Bird = {
   species: string;
   id: string;
+  username: string;
 };
 
 async function getBirds(): Promise<Bird[]> {
