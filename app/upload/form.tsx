@@ -34,17 +34,13 @@ export default function UploadForm({ upload }: { upload: (formData: FormData | s
   return (
     <div>
       <form action={upload} className="mx-24 bg-teal-300 shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <label htmlFor="file" className="block text-gray-700 text-sm font-bold mb-2">
-          Username
-        </label>
         <input
           name="username"
-          type="text"
+          type="hidden"
           defaultValue={user.Username}
           className="bg-white shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         />
 
-        <br />
         <label htmlFor="file" className="block text-gray-700 text-sm font-bold mb-2">
           JPG
         </label>
