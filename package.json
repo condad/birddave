@@ -3,13 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "next-dev": "sst bind --stage dev next dev",
-    "sst-dev": "sst bind --stage dev sst dev",
-    "build": "sst bind --stage dev next build",
-    "prod-deploy": "sst bind --stage prod sst deploy",
-    "dev-diff": "sst bind --stage prod sst diff",
-    "prod-diff": "sst bind --stage prod sst diff",
-    "lint": "next lint"
+    "sst-dev": "sst bind sst dev",
+    "dev": "sst bind next dev",
+    "build": "sst bind next build",
+    "deploy": "sst bind --stage prod sst deploy",
+    "lint": "sst bind next lint"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.535.0",
