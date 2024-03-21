@@ -2,13 +2,13 @@ import { SSTConfig } from "sst";
 import { Cognito, Bucket, NextjsSite, Table } from "sst/constructs";
 import { UserPool } from "aws-cdk-lib/aws-cognito";
 
-const REGION = "ca-central-1";
+const REGION = "us-east-1";
 
 export default {
   config(_input) {
     return {
       name: "birddave",
-      region: "ca-central-1",
+      region: REGION,
     };
   },
   stacks(app) {
