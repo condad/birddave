@@ -5,14 +5,31 @@ import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { v4 as uuidv4 } from "uuid";
 import { UploadForm } from "./form";
+import { CognitoJwtVerifier } from "aws-jwt-verify";
+import { Parallel } from "aws-cdk-lib/aws-stepfunctions";
+
+const verifier = CognitoJwtVerifier.create({
+  userPoolId: process.env.COGNITO_USER_POOL_ID as string,
+  tokenUse: "id",
+  clientId: process.env.COGNITO_CLIENT_ID as string,
+});
 
 export default function Page() {
   async function uploadPicture(formData: FormData) {
     "use server";
 
+    let username: string;
+
     const file = formData.get("file") as File;
     const species = formData.get("species") as string;
-    const username = formData.get("username") as string;
+    const idToken = formData.get("id") as string;
+
+    try {
+      const payload = await verifier.verify(idToken);
+      username = payload.sub;
+    } catch {
+      throw new Error("Token invalid!");
+    }
 
     const fileArrayBuffer = await file.arrayBuffer();
     const fileBuffer = Buffer.from(fileArrayBuffer);
@@ -37,6 +54,7 @@ export default function Page() {
       },
     });
 
+    // TODO: Run in parallel
     const s3Response = await s3Client.send(command);
     const dbResponse = await dbClient.send(insertCommand);
   }

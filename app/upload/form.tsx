@@ -1,44 +1,31 @@
 "use client";
 
-import {
-  CognitoIdentityProviderClient,
-  GetUserCommand,
-  GetUserCommandOutput,
-} from "@aws-sdk/client-cognito-identity-provider";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import queryString from "query-string";
 
-async function getCognitoUser(): Promise<GetUserCommandOutput | undefined> {
-  if (typeof window !== "undefined") {
-    const client = new CognitoIdentityProviderClient({ region: "ca-central-1" });
-    const hash = window.location.hash;
-
-    if (hash) {
-      // TODO: Use regex to parse the hash
-      const [idField, accessTokenField, ..._] = hash.split("&");
-      const accesstoken = accessTokenField.split("=")[1];
-
-      return await client.send(new GetUserCommand({ AccessToken: accesstoken }));
-    }
-  }
-}
+type CognitoTokens = {
+  id_token: string;
+  access_token: string;
+  expires_in: number;
+};
 
 export function UploadForm({ upload }: { upload: (formData: FormData | string) => Promise<void> }) {
-  const [user, setUser] = useState<GetUserCommandOutput | undefined>(undefined);
+  const [cognitoTokens, setCognitoTokens] = useState<CognitoTokens | undefined>(undefined);
   const router = useRouter();
 
   useEffect(() => {
-    getCognitoUser().then((user) => {
-      if (user === undefined) {
-        router.push("/login");
-        return;
-      }
+    const cognitoTokens = queryString.parse(window.location.hash);
 
-      setUser(user);
-    });
+    if (cognitoTokens.id_token === undefined) {
+      return router.push("/login");
+    }
+
+    // TODO: Verify the parsed query is the correct type
+    setCognitoTokens(cognitoTokens as unknown as CognitoTokens);
   }, []);
 
-  if (user === undefined) {
+  if (cognitoTokens === undefined) {
     // Loading Spinner
     return <></>;
   }
@@ -46,9 +33,9 @@ export function UploadForm({ upload }: { upload: (formData: FormData | string) =
   return (
     <form action={upload} className="mx-24 bg-teal-300 shadow-md rounded pt-6 pb-8 mb-4 px-8 max-w-screen-md mx-auto">
       <input
-        name="username"
+        name="id"
         type="hidden"
-        defaultValue={user.Username}
+        defaultValue={cognitoTokens.id_token}
         className="bg-white shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
       />
 

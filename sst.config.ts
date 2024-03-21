@@ -73,6 +73,7 @@ export default {
         environment: {
           COGNITO_SIGN_IN_URL: signInUrl,
           COGNITO_USER_POOL_ID: pool.userPoolId,
+          COGNITO_CLIENT_ID: client.userPoolClientId,
         },
       });
 
