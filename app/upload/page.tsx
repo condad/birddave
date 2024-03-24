@@ -6,7 +6,6 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { v4 as uuidv4 } from "uuid";
 import { UploadForm } from "./form";
 import { CognitoJwtVerifier } from "aws-jwt-verify";
-import { Parallel } from "aws-cdk-lib/aws-stepfunctions";
 
 const verifier = CognitoJwtVerifier.create({
   userPoolId: process.env.COGNITO_USER_POOL_ID as string,
