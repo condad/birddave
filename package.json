@@ -6,7 +6,6 @@
     "sst-dev": "sst bind sst dev",
     "dev": "sst bind next dev",
     "build": "sst bind next build",
-    "deploy": "sst bind --stage prod sst deploy",
     "lint": "sst bind next lint"
   },
   "dependencies": {

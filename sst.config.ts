@@ -3,6 +3,7 @@ import { Cognito, Bucket, NextjsSite, Table } from "sst/constructs";
 import { UserPool } from "aws-cdk-lib/aws-cognito";
 
 const REGION = "us-east-1";
+const DOMAIN = "birddave.com";
 
 export default {
   config(_input) {
@@ -12,6 +13,12 @@ export default {
     };
   },
   stacks(app) {
+    var baseURL = "http://localhost:3000";
+
+    if (app.mode === "deploy") {
+      baseURL = `https://${DOMAIN}`;
+    }
+
     app.stack(function Site({ stack }) {
       const pool = new UserPool(stack, "userPool", {
         selfSignUpEnabled: true,
@@ -25,7 +32,7 @@ export default {
           flows: {
             implicitCodeGrant: true,
           },
-          callbackUrls: ["http://localhost:3000", "http://localhost:3000/upload"],
+          callbackUrls: [baseURL, `${baseURL}/upload`],
         },
       });
       const domain = pool.addDomain("birddave", {
@@ -35,7 +42,7 @@ export default {
       });
 
       const signInUrl = domain.signInUrl(client, {
-        redirectUri: "http://localhost:3000/upload", // must be a URL configured under 'callbackUrls' with the client
+        redirectUri: `${baseURL}/upload`, // must be a URL configured under 'callbackUrls' with the client
       });
 
       const auth = new Cognito(stack, "auth", {
@@ -69,9 +76,10 @@ export default {
 
       const site = new NextjsSite(stack, "site", {
         path: ".",
+        customDomain: DOMAIN,
         bind: [bucket, table],
         environment: {
-          COGNITO_SIGN_IN_URL: signInUrl,
+          NEXT_PUBLIC_SIGN_IN_URL: signInUrl,
           COGNITO_USER_POOL_ID: pool.userPoolId,
           COGNITO_CLIENT_ID: client.userPoolClientId,
         },
@@ -79,7 +87,7 @@ export default {
 
       stack.addOutputs({
         StackName: stack.stackName,
-        SiteUrl: site.url,
+        SiteUrl: site.customDomainUrl || site.url || baseURL,
         UserPoolId: pool.userPoolId,
         ClientId: client.userPoolClientId,
         CognitoSignInUrl: signInUrl,

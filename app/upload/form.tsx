@@ -18,7 +18,7 @@ export function UploadForm({ upload }: { upload: (formData: FormData | string) =
     const cognitoTokens = queryString.parse(window.location.hash);
 
     if (cognitoTokens.id_token === undefined) {
-      return router.push("/login");
+      return router.push(process.env.NEXT_PUBLIC_SIGN_IN_URL);
     }
 
     // TODO: Verify the parsed query is the correct type

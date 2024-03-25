@@ -22,15 +22,6 @@ const nextConfig = {
     // Will be available on both server and client
     bucketUrl: `https://${Bucket.public.bucketName}.s3.amazonaws.com`,
   },
-  redirects: async () => {
-    return [
-      {
-        source: "/login",
-        destination: process.env.COGNITO_SIGN_IN_URL,
-        permanent: true,
-      },
-    ];
-  },
 };
 
 export default nextConfig;
