@@ -4,6 +4,12 @@ import { Bucket } from "sst/node/bucket";
  * @type {import('next').NextConfig}
  * */
 const nextConfig = {
+  webpack: (config, options) => {
+    if (!options.dev) {
+      config.devtool = "source-map";
+    }
+    return config;
+  },
   images: {
     remotePatterns: [
       {
