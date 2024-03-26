@@ -7,15 +7,15 @@ import { v4 as uuidv4 } from "uuid";
 import { UploadForm } from "./form";
 import { CognitoJwtVerifier } from "aws-jwt-verify";
 
-const verifier = CognitoJwtVerifier.create({
-  userPoolId: process.env.COGNITO_USER_POOL_ID as string,
-  tokenUse: "id",
-  clientId: process.env.COGNITO_CLIENT_ID as string,
-});
-
 export default function Page() {
   async function uploadPicture(formData: FormData) {
     "use server";
+
+    const verifier = CognitoJwtVerifier.create({
+      userPoolId: process.env.COGNITO_USER_POOL_ID as string,
+      tokenUse: "id",
+      clientId: process.env.COGNITO_CLIENT_ID as string,
+    });
 
     let username: string;
 
