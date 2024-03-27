@@ -5,6 +5,8 @@ import getConfig from "next/config";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import Image from "next/image";
 
+export const dynamic = "force-dynamic";
+
 type Bird = {
   species: string;
   id: string;
