@@ -7,10 +7,13 @@ const DOMAIN = "birddave.com";
 
 export function Infra({ stack }) {
   var baseURL = "http://localhost:3000";
+  var cognitoDomain = "birddave-dev";
 
   if (stack.stage === "prod") {
     baseURL = `https://${DOMAIN}`;
+    cognitoDomain = "birddave";
   }
+
   const pool = new UserPool(stack, "userPool", {
     selfSignUpEnabled: true,
     signInAliases: {
@@ -28,7 +31,7 @@ export function Infra({ stack }) {
   });
   const domain = pool.addDomain("birddave", {
     cognitoDomain: {
-      domainPrefix: "birddave",
+      domainPrefix: cognitoDomain,
     },
   });
 
