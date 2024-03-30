@@ -10,7 +10,7 @@ type CognitoTokens = {
   expires_in: number;
 };
 
-export function UploadForm({ upload }: { upload: (formData: FormData | string) => Promise<void> }) {
+export function UploadForm({ upload }: { upload: (formData: FormData) => Promise<void> }) {
   const [cognitoTokens, setCognitoTokens] = useState<CognitoTokens | undefined>(undefined);
   const router = useRouter();
 
@@ -18,12 +18,15 @@ export function UploadForm({ upload }: { upload: (formData: FormData | string) =
     const cognitoTokens = queryString.parse(window.location.hash);
 
     if (cognitoTokens.id_token === undefined) {
+      if (process.env.NEXT_PUBLIC_SIGN_IN_URL === undefined) {
+        throw new Error("Sign in URL not defined");
+      }
       return router.push(process.env.NEXT_PUBLIC_SIGN_IN_URL);
     }
 
     // TODO: Verify the parsed query is the correct type
     setCognitoTokens(cognitoTokens as unknown as CognitoTokens);
-  }, []);
+  }, [router]);
 
   if (cognitoTokens === undefined) {
     // Loading Spinner
