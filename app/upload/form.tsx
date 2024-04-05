@@ -2,35 +2,39 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import queryString from "query-string";
-
-type CognitoTokens = {
-  id_token: string;
-  access_token: string;
-  expires_in: number;
-};
+import { getAuthTokens, setAuthTokens } from "../utils";
+import { AuthTokens } from "../types";
 
 export function UploadForm({ upload }: { upload: (formData: FormData) => Promise<void> }) {
-  const [cognitoTokens, setCognitoTokens] = useState<CognitoTokens | undefined>(undefined);
+  const [tokens, setTokens] = useState<AuthTokens | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    const cognitoTokens = queryString.parse(window.location.hash);
-
-    if (cognitoTokens.id_token === undefined) {
-      if (process.env.NEXT_PUBLIC_SIGN_IN_URL === undefined) {
-        throw new Error("Sign in URL not defined");
-      }
-      return router.push(process.env.NEXT_PUBLIC_SIGN_IN_URL);
+    if (tokens !== null) {
+      return;
     }
 
-    // TODO: Verify the parsed query is the correct type
-    setCognitoTokens(cognitoTokens as unknown as CognitoTokens);
-  }, [router]);
+    let authTokens = getAuthTokens();
 
-  if (cognitoTokens === undefined) {
+    if (tokens !== authTokens) {
+      return setTokens(authTokens);
+    }
+
+    if (window.location.hash !== "") {
+      const authTokens = setAuthTokens(window.location.hash);
+      return setTokens(authTokens);
+    }
+
+    if (process.env.NEXT_PUBLIC_SIGN_IN_URL === undefined) {
+      throw new Error("Sign in URL not defined");
+    }
+
+    router.push(process.env.NEXT_PUBLIC_SIGN_IN_URL);
+  });
+
+  if (!tokens) {
     // Loading Spinner
-    return <></>;
+    return <>Loading</>;
   }
 
   return (
@@ -38,7 +42,7 @@ export function UploadForm({ upload }: { upload: (formData: FormData) => Promise
       <input
         name="id"
         type="hidden"
-        defaultValue={cognitoTokens.id_token}
+        defaultValue={tokens.id_token}
         className="bg-white shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
       />
 
