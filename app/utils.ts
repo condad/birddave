@@ -1,16 +1,15 @@
 // todo: write decorater function to check for window definition
-
-"use client";
-
 import {
+  AdminGetUserCommandOutput,
   CognitoIdentityProviderClient,
   GetUserCommand,
   GetUserCommandOutput,
 } from "@aws-sdk/client-cognito-identity-provider";
 import queryString from "query-string";
-import { AuthTokens } from "./types";
+import { AuthTokens, User } from "./types";
 import { addSeconds, isAfter } from "date-fns";
 
+const LOCAL_STORAGE_USER_KEY = "user";
 const LOCAL_STORAGE_AUTH_TOKENS_KEY = "auth-tokens";
 const LOCAL_STORAGE_AUTH_TOKENS_EXPIRY_KEY = `${LOCAL_STORAGE_AUTH_TOKENS_KEY}-expiry`;
 
@@ -56,19 +55,38 @@ export function setAuthTokens(hash: string): AuthTokens | null {
   return parsedHash as unknown as AuthTokens;
 }
 
-// TODO: Return our custom 'User type'
-export async function getUser(): Promise<GetUserCommandOutput | null> {
+export function parseUserCommandOutput(resp: GetUserCommandOutput | AdminGetUserCommandOutput): User {
+  return {
+    sub: resp.UserAttributes?.filter((attr) => attr.Name === "sub")[0]?.Value as string,
+    email: resp.UserAttributes?.filter((attr) => attr.Name === "email")[0]?.Value as string,
+    verified: Boolean(resp.UserAttributes?.filter((attr) => attr.Name === "email_verified")[0]?.Value),
+  };
+}
+
+export async function getUser(): Promise<User | null> {
   if (typeof window === "undefined") {
     return null;
   }
 
-  const userTokens = getAuthTokens();
+  const authTokens = getAuthTokens();
 
-  if (userTokens === null) {
+  if (authTokens === null) {
+    localStorage.removeItem(LOCAL_STORAGE_USER_KEY);
     return null;
   }
 
+  const user = localStorage.getItem(LOCAL_STORAGE_USER_KEY);
+
+  if (user !== null) {
+    return JSON.parse(user);
+  }
+
   const client = new CognitoIdentityProviderClient({ region: "us-east-1" });
-  const getUserCmd = new GetUserCommand({ AccessToken: userTokens.access_token });
-  return await client.send(getUserCmd);
+  const getUserCmd = new GetUserCommand({ AccessToken: authTokens.access_token });
+  const resp = await client.send(getUserCmd);
+
+  const parsedUser = parseUserCommandOutput(resp);
+  localStorage.setItem(LOCAL_STORAGE_USER_KEY, JSON.stringify(parsedUser));
+
+  return user;
 }

@@ -5,9 +5,9 @@ export type AuthTokens = {
 };
 
 export type User = {
-  name: string;
+  sub: string;
   email: string;
-  validated: boolean;
+  verified: boolean;
 };
 
 export type Bird = {
