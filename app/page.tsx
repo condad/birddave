@@ -9,7 +9,6 @@ import { Bird } from "./types";
 export const dynamic = "force-dynamic";
 
 async function getBirds(): Promise<Bird[]> {
-  // TODO: This function should run on every request, not just at build time.
   const dbClient = new DynamoDBClient();
 
   const resp = await dbClient.send(new ScanCommand({ TableName: Table.table.tableName }));
