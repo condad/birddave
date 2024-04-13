@@ -4,14 +4,9 @@ import { ScanCommand } from "@aws-sdk/lib-dynamodb";
 import getConfig from "next/config";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import Image from "next/image";
+import { Bird } from "./types";
 
 export const dynamic = "force-dynamic";
-
-type Bird = {
-  species: string;
-  id: string;
-  username: string;
-};
 
 async function getBirds(): Promise<Bird[]> {
   // TODO: This function should run on every request, not just at build time.
