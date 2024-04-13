@@ -10,7 +10,7 @@ export function User() {
 
   useEffect(() => {
     getUser().then((user) => setUser(user));
-  }, []);
+  });
 
   return <div>{user === null ? "Not logged in" : `Logged in as ${user.email}`}</div>;
 }
