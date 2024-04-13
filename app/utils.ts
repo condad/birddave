@@ -9,17 +9,34 @@ import {
 } from "@aws-sdk/client-cognito-identity-provider";
 import queryString from "query-string";
 import { AuthTokens } from "./types";
+import { addSeconds, isAfter } from "date-fns";
 
-const LOCAL_STORAGE_USER_TOKENS_KEY = "user-tokens";
+const LOCAL_STORAGE_AUTH_TOKENS_KEY = "auth-tokens";
+const LOCAL_STORAGE_AUTH_TOKENS_EXPIRY_KEY = `${LOCAL_STORAGE_AUTH_TOKENS_KEY}-expiry`;
 
 export function getAuthTokens(): AuthTokens | null {
   if (typeof window === "undefined") {
     return null;
   }
 
-  // todo: Set expiry time stamp to compare against, instead of timeout
-  const tokens = localStorage.getItem(LOCAL_STORAGE_USER_TOKENS_KEY);
-  return tokens ? JSON.parse(tokens) : null;
+  const authTokens = localStorage.getItem(LOCAL_STORAGE_AUTH_TOKENS_KEY);
+  const authTokensExpiry = localStorage.getItem(LOCAL_STORAGE_AUTH_TOKENS_EXPIRY_KEY);
+
+  if (authTokens === null || authTokensExpiry === null) {
+    return null;
+  }
+
+  const now = new Date();
+  const parsedAuthTokens = JSON.parse(authTokens) as AuthTokens;
+  const parsedAuthTokensExpiry = new Date(authTokensExpiry);
+
+  if (isAfter(now, parsedAuthTokensExpiry)) {
+    localStorage.removeItem(LOCAL_STORAGE_AUTH_TOKENS_KEY);
+    localStorage.removeItem(LOCAL_STORAGE_AUTH_TOKENS_EXPIRY_KEY);
+    return null;
+  }
+
+  return parsedAuthTokens;
 }
 
 export function setAuthTokens(hash: string): AuthTokens | null {
@@ -27,14 +44,14 @@ export function setAuthTokens(hash: string): AuthTokens | null {
     return null;
   }
 
+  // todo: Verify the parsed query is the correct type
   const parsedHash = queryString.parse(window.location.hash);
 
-  // todo: Verify the parsed query is the correct type
-  localStorage.setItem(LOCAL_STORAGE_USER_TOKENS_KEY, JSON.stringify(parsedHash));
+  const authTokens: string = JSON.stringify(parsedHash);
+  const authTokensExpiry = addSeconds(new Date(), Number(parsedHash.expires_in)).toISOString();
 
-  // todo: set expiry time stamp
-  // const timeoutMs = Number(parsedHash.expires_in) * 1000;
-  // localStorage.setItem("user_tokens_expiry", JSON.stringify(parsedHash));
+  localStorage.setItem(LOCAL_STORAGE_AUTH_TOKENS_KEY, authTokens);
+  localStorage.setItem(LOCAL_STORAGE_AUTH_TOKENS_EXPIRY_KEY, authTokensExpiry);
 
   return parsedHash as unknown as AuthTokens;
 }
