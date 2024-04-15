@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { User } from "./User";
+import { AuthStatus } from "./AuthStatus";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +24,7 @@ export default function RootLayout({
               BirdDave 🦜
             </a>
 
-            <User></User>
+            <AuthStatus />
 
             <a href="/upload">
               <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Upload</button>
