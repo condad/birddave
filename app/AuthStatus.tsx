@@ -5,12 +5,6 @@ import { getUser } from "./utils";
 import { type User } from "./types";
 import { useEffect } from "react";
 
-export function AuthStatus() {
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    getUser().then((user) => setUser(user));
-  });
-
-  return <div>{user === null ? "Not logged in" : `Logged in as ${user.email}`}</div>;
+export function AuthStatus({ currentUser }: { currentUser: User | null }) {
+  return <div>{currentUser === null ? "Not logged in" : `Logged in as ${currentUser.email}`}</div>;
 }

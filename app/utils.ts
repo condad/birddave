@@ -88,5 +88,5 @@ export async function getUser(): Promise<User | null> {
   const parsedUser = parseUserCommandOutput(resp);
   localStorage.setItem(LOCAL_STORAGE_USER_KEY, JSON.stringify(parsedUser));
 
-  return user;
+  return parsedUser;
 }

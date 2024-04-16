@@ -1,27 +1,38 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getAuthTokens, setAuthTokens } from "../utils";
+import { getAuthTokens, setAuthTokens, getUser } from "../utils";
 import { AuthTokens } from "../types";
+import { CurrentUserContext } from "../context";
 
 export function UploadForm({ upload }: { upload: (formData: FormData) => Promise<void> }) {
   const [tokens, setTokens] = useState<AuthTokens | null>(null);
+  const { setCurrentUser } = useContext(CurrentUserContext);
   const router = useRouter();
 
   useEffect(() => {
     if (tokens !== null) {
+      getUser().then((user) => {
+        setCurrentUser(user);
+      });
       return;
     }
 
     let authTokens = getAuthTokens();
 
     if (tokens !== authTokens) {
+      getUser().then((user) => {
+        setCurrentUser(user);
+      });
       return setTokens(authTokens);
     }
 
     if (window.location.hash !== "") {
       const authTokens = setAuthTokens(window.location.hash);
+      getUser().then((user) => {
+        setCurrentUser(user);
+      });
       return setTokens(authTokens);
     }
 
@@ -30,7 +41,7 @@ export function UploadForm({ upload }: { upload: (formData: FormData) => Promise
     }
 
     router.push(process.env.NEXT_PUBLIC_SIGN_IN_URL);
-  });
+  }, [router, tokens, setCurrentUser]);
 
   if (!tokens) {
     // Loading Spinner
