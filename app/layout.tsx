@@ -19,6 +19,10 @@ export default function RootLayout({
 
   return (
     <html lang="en" className="w-full">
+      <head>
+        <title>BirdDave 🦜</title>
+      </head>
+
       <body className={`${inter.className} w-full min-h-screen max-w-screen overflow-x-hidden`}>
         <header className="text-slate-700 w-full flex justify-center py-3 px-4">
           <div className="container mx-auto flex flex-row justify-between items-center">
