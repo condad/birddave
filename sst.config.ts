@@ -26,7 +26,7 @@ export function Infra({ stack }) {
       flows: {
         implicitCodeGrant: true,
       },
-      callbackUrls: [baseURL, `${baseURL}/upload`],
+      callbackUrls: [baseURL, `${baseURL}/tokens`],
     },
   });
   const domain = pool.addDomain("birddave", {
@@ -36,7 +36,7 @@ export function Infra({ stack }) {
   });
 
   const signInUrl = domain.signInUrl(client, {
-    redirectUri: `${baseURL}/upload`, // must be a URL configured under 'callbackUrls' with the client
+    redirectUri: `${baseURL}/tokens`, // must be a URL configured under 'callbackUrls' with the client
   });
 
   const auth = new Cognito(stack, "auth", {

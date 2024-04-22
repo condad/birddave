@@ -10,8 +10,8 @@ import { AuthTokens, User } from "./types";
 import { addSeconds, isAfter } from "date-fns";
 
 const LOCAL_STORAGE_USER_KEY = "user";
-const LOCAL_STORAGE_AUTH_TOKENS_KEY = "auth-tokens";
-const LOCAL_STORAGE_AUTH_TOKENS_EXPIRY_KEY = `${LOCAL_STORAGE_AUTH_TOKENS_KEY}-expiry`;
+export const LOCAL_STORAGE_AUTH_TOKENS_KEY = "auth-tokens";
+export const LOCAL_STORAGE_AUTH_TOKENS_EXPIRY_KEY = `${LOCAL_STORAGE_AUTH_TOKENS_KEY}-expiry`;
 
 export function getAuthTokens(): AuthTokens | null {
   if (typeof window === "undefined") {
@@ -38,7 +38,7 @@ export function getAuthTokens(): AuthTokens | null {
   return parsedAuthTokens;
 }
 
-export function setAuthTokens(hash: string): AuthTokens | null {
+export function storeAuthTokens(hash: string): AuthTokens | null {
   if (typeof window === "undefined") {
     return null;
   }
@@ -53,6 +53,11 @@ export function setAuthTokens(hash: string): AuthTokens | null {
   localStorage.setItem(LOCAL_STORAGE_AUTH_TOKENS_EXPIRY_KEY, authTokensExpiry);
 
   return parsedHash as unknown as AuthTokens;
+}
+
+// todo: deprecate
+export function setAuthTokens(hash: string): AuthTokens | null {
+  return storeAuthTokens(hash);
 }
 
 export function parseUserCommandOutput(resp: GetUserCommandOutput | AdminGetUserCommandOutput): User {

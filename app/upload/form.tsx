@@ -4,11 +4,11 @@ import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAuthTokens, setAuthTokens, getUser } from "../utils";
 import { AuthTokens } from "../types";
-import { CurrentUserContext } from "../context";
+import { AuthContext } from "../context";
 
 export function UploadForm({ upload }: { upload: (formData: FormData) => Promise<void> }) {
   const [tokens, setTokens] = useState<AuthTokens | null>(null);
-  const { setCurrentUser } = useContext(CurrentUserContext);
+  const { setCurrentUser } = useContext(AuthContext);
   const router = useRouter();
 
   useEffect(() => {

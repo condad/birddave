@@ -4,9 +4,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthStatus } from "./AuthStatus";
 import { useState } from "react";
-import { User } from "./types";
+import { User, AuthTokens } from "./types";
 import Link from "next/link";
-import { CurrentUserContext } from "./context";
+import { AuthContext } from "./context";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,6 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [authTokens, setAuthTokens] = useState<AuthTokens | null>(null);
 
   return (
     <html lang="en" className="w-full">
@@ -38,9 +39,9 @@ export default function RootLayout({
           </div>
         </header>
 
-        <CurrentUserContext.Provider value={{ currentUser, setCurrentUser }}>
+        <AuthContext.Provider value={{ currentUser, setCurrentUser, authTokens, setAuthTokens }}>
           <main className="my-10 w-full px-4 min-h-screen">{children}</main>
-        </CurrentUserContext.Provider>
+        </AuthContext.Provider>
 
         <footer className="py-3 text-center">The end</footer>
       </body>
