@@ -13,8 +13,8 @@ const cognitoClient = new CognitoIdentityProviderClient();
 
 export default async function Page({ params }) {
   const { publicRuntimeConfig } = getConfig();
-
   const birdImageURL = `${publicRuntimeConfig.bucketUrl}/${params.id}`;
+
   const command = new GetCommand({
     TableName: Table.table.tableName,
     Key: {
