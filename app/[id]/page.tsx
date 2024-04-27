@@ -26,23 +26,25 @@ export default async function Page({ params }) {
   if (!dbResp.Item) {
     return notFound();
   }
+  const bird = dbResp.Item as Bird;
 
   const getUserCommand = new AdminGetUserCommand({
     UserPoolId: process.env.COGNITO_USER_POOL_ID,
-    Username: dbResp.Item?.username,
+    Username: bird.username,
   });
   const userResp = await cognitoClient.send(getUserCommand);
 
-  const bird = dbResp.Item as Bird;
   const user = parseUserCommandOutput(userResp);
 
   return (
-    <div className="container mx-auto">
-      <div className="w-full mb-4">
-        <h2>User: {user.email}</h2>
-        <h2>Species: {bird.species}</h2>
+    <div className="container mx-auto grid grid-cols-7">
+      <div className="col-span-5">
+        <Image src={birdImageURL} alt="" width={1000} height={1000} className="w-full" layout="responsive" />
       </div>
-      <Image src={birdImageURL} alt="" width={1000} height={1000} className="w-full" layout="responsive" />
+      <div className="col-span-2 pl-10">
+        <h1>📖 {bird.species}</h1>
+        <h2>📷 {user.email}</h2>
+      </div>
     </div>
   );
 }
