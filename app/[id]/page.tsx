@@ -2,18 +2,46 @@ import getConfig from "next/config";
 import Image from "next/image";
 import { CognitoIdentityProviderClient, AdminGetUserCommand } from "@aws-sdk/client-cognito-identity-provider";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { GetCommand } from "@aws-sdk/lib-dynamodb";
+import { GetCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { Table } from "sst/node/table";
 import { notFound } from "next/navigation";
-import { parseUserCommandOutput } from "../utils";
+import DetailPanel from "./DetailPanel";
+import { getCurrentUser, parseUserCommandOutput } from "../utils";
 import { Bird } from "../types";
+import { S3Client } from "@aws-sdk/client-s3";
+import { Bucket } from "sst/node/bucket";
 
+const s3Client = new S3Client();
 const dbClient = new DynamoDBClient();
 const cognitoClient = new CognitoIdentityProviderClient();
+
+async function deletePhoto(id: string): Promise<void> {
+  // todo: check the current user is the author of the photo
+  "use server";
+
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) {
+    throw new Error("Not authenticated");
+  }
+
+  await dbClient.send(
+    new DeleteCommand({
+      TableName: Table.table.tableName,
+      Key: {
+        id: id,
+      },
+    })
+  );
+  await s3Client.send(new DeleteObjectCommand({ Bucket: Bucket.public.bucketName, Key: id }));
+}
 
 export default async function Page({ params }) {
   const { publicRuntimeConfig } = getConfig();
   const birdImageURL = `${publicRuntimeConfig.bucketUrl}/${params.id}`;
+
+  const currentUser = await getCurrentUser();
 
   const command = new GetCommand({
     TableName: Table.table.tableName,
@@ -34,7 +62,7 @@ export default async function Page({ params }) {
   });
   const userResp = await cognitoClient.send(getUserCommand);
 
-  const user = parseUserCommandOutput(userResp);
+  const author = parseUserCommandOutput(userResp);
 
   return (
     <div className="container mx-auto grid grid-cols-7">
@@ -42,8 +70,7 @@ export default async function Page({ params }) {
         <Image src={birdImageURL} alt="" width={1000} height={1000} className="w-full" layout="responsive" />
       </div>
       <div className="col-span-2 pl-10">
-        <h1>📖 {bird.species}</h1>
-        <h2>📷 {user.email}</h2>
+        <DetailPanel bird={bird} author={author} currentUser={currentUser} deletePhoto={deletePhoto} />
       </div>
     </div>
   );

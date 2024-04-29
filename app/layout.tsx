@@ -21,7 +21,7 @@ export default async function RootLayout({ children }) {
         <header className="text-slate-700 w-full flex justify-center py-3 px-4">
           <div className="container mx-auto flex flex-row justify-between items-center">
             <Link href="/" className="text-5xl">
-              BirdDave 🦜
+              🦜 BirdDave
             </Link>
 
             <AuthStatus currentUser={currentUser} />
