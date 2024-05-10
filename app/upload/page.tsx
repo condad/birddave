@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import { idVerifier } from "../utils";
 import { cookies } from "next/headers";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
+import { Form } from "./form";
 
 export default function Page() {
   async function uploadPicture(formData: FormData) {
@@ -58,36 +59,7 @@ export default function Page() {
 
   return (
     <div className="container mx-auto">
-      <form
-        action={uploadPicture}
-        className="mx-24 bg-teal-300 shadow-md rounded pt-6 pb-8 mb-4 px-8 max-w-screen-md mx-auto">
-        <label htmlFor="file" className="block text-gray-700 text-sm font-bold mb-2">
-          JPG
-        </label>
-        <input
-          name="file"
-          type="file"
-          accept="image/png, image/jpeg, image/jpg"
-          className="bg-white shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        />
-
-        <br />
-        <label htmlFor="species" className="block text-gray-700 text-sm font-bold mb-2">
-          Species
-        </label>
-        <input
-          name="species"
-          type="text"
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        />
-
-        <br />
-        <input
-          type="submit"
-          className="mt-5 shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
-          value="Submit"
-        />
-      </form>
+      <Form uploadPicture={uploadPicture} />
     </div>
   );
 }
