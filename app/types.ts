@@ -14,4 +14,5 @@ export type Bird = {
   species: string;
   id: string;
   username: string;
+  commonName: string;
 };

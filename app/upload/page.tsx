@@ -21,6 +21,7 @@ export default function Page() {
     const file = formData.get("file") as File;
     const species = formData.get("species") as string;
     const idToken = idTokenCookie.value;
+    const [commonName, scientificName] = species.split(" - ");
 
     try {
       const payload = await idVerifier.verify(idToken);
@@ -47,7 +48,8 @@ export default function Page() {
       TableName: Table.table.tableName,
       Item: {
         id: id,
-        species,
+        species: scientificName.toLowerCase(),
+        commonName: commonName,
         username,
       },
     });

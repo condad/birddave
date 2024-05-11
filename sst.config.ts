@@ -95,6 +95,7 @@ export function Site({ stack }) {
     bind: [bucket, table],
     environment: {
       NEXT_PUBLIC_SIGN_IN_URL: signInUrl,
+      NEXT_PUBLIC_EBIRD_KEY: "jfekjedvescr",
       COGNITO_USER_POOL_ID: cognitoPool.userPoolId,
       COGNITO_CLIENT_ID: cognitoClient.userPoolClientId,
     },

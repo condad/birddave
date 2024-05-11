@@ -2,14 +2,22 @@
 
 import AsyncSelect from "react-select/async";
 
-async function promiseOptions(inputValue: string): Promise<any> {
-  const response = await fetch(
-    `https://vl3oj3lqpf.execute-api.us-east-1.amazonaws.com/live/api/getautocomplete/${inputValue}`
-  );
+async function promiseOptions(inputValue: string): Promise<Record<string, string>[]> {
+  if (inputValue.length < 3) {
+    return [];
+  }
 
+  const searchParams = new URLSearchParams({
+    locale: "en_US",
+    cat: "species",
+    key: process.env.NEXT_PUBLIC_EBIRD_KEY,
+    q: inputValue,
+  } as Record<string, string>);
+
+  const response = await fetch("https://api.ebird.org/v2/ref/taxon/find?" + searchParams);
   const data = await response.json();
 
-  return data.map((species: Record<string, string>) => ({ value: species.common_name, label: species.common_name }));
+  return data.map((species: Record<string, string>) => ({ value: species.name, label: species.name }));
 }
 
 export function Form({ uploadPicture }) {
@@ -37,7 +45,6 @@ export function Form({ uploadPicture }) {
         className="shadow appearance-none rounded w-full text-gray-700  focus:outline-none focus:shadow-outline"
         name="species"
         cacheOptions
-        defaultOptions
         loadOptions={promiseOptions}
       />
 

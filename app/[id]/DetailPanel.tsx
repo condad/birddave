@@ -16,6 +16,7 @@ export default function DetailPanel({
 
   return (
     <>
+      <h1>🦜 {bird.commonName}</h1>
       <h1>📖 {bird.species}</h1>
       <h2>📷 {author.email}</h2>
       {currentUserIsAuthor && (
