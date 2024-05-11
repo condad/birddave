@@ -15,4 +15,5 @@ export type Bird = {
   id: string;
   username: string;
   commonName: string;
+  uploadedAt: string;
 };

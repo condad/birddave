@@ -50,6 +50,7 @@ export default function Page() {
         id: id,
         species: scientificName.toLowerCase(),
         commonName: commonName,
+        uploadedAt: new Date().toISOString(),
         username,
       },
     });
