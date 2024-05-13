@@ -24,7 +24,7 @@ export function Form({ uploadPicture }) {
   return (
     <form
       action={uploadPicture}
-      className="mx-24 bg-teal-300 shadow-md rounded pt-6 pb-8 mb-4 px-8 max-w-screen-md mx-auto">
+      className="mx-24 my-20 bg-slate-100 shadow-md rounded pt-6 pb-8 mb-4 px-8 max-w-screen-md mx-auto">
       <label htmlFor="file" className="block text-gray-700 text-sm font-bold mb-2">
         JPG
       </label>

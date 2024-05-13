@@ -13,13 +13,15 @@ export default function DetailPanel({
   deletePhoto: (id: string) => void;
 }) {
   const currentUserIsAuthor = currentUser != null && author.email == currentUser.email;
+  const uploadDate = new Date(bird.uploadedAt);
 
   return (
     <>
-      <h1>🦜 {bird.commonName}</h1>
-      <h1>📖 {bird.species}</h1>
-      <h1>🗓️ {bird.uploadedAt}</h1>
-      <h2>📷 {author.email}</h2>
+      <h1 className="text-lg font-bold">{bird.commonName}</h1>
+      <h1 className="font-thin italic">({bird.species})</h1>
+      <br />
+      <h2 className="text-sm font-thin">By {author.email}</h2>
+      <h2 className="text-sm font-thin">on {uploadDate.toDateString()}</h2>
       {currentUserIsAuthor && (
         <button
           onClick={() => deletePhoto(bird.id)}

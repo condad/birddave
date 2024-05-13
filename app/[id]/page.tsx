@@ -65,11 +65,11 @@ export default async function Page({ params }) {
   const author = parseUserCommandOutput(userResp);
 
   return (
-    <div className="container mx-auto grid grid-cols-7">
-      <div className="col-span-5">
-        <Image src={birdImageURL} alt="" width={1000} height={1000} className="w-full" layout="responsive" />
+    <div className="container mx-auto h-screen flex flex-row flex-wrap">
+      <div className="flex-auto relative basis-3/4 h-3/4">
+        <Image src={birdImageURL} alt="" className="object-cover" fill />
       </div>
-      <div className="col-span-2 pl-10">
+      <div className="flex-auto pl-5">
         <DetailPanel bird={bird} author={author} currentUser={currentUser} deletePhoto={deletePhoto} />
       </div>
     </div>
