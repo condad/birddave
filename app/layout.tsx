@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthStatus } from "./AuthStatus";
 import Link from "next/link";
 import { getCurrentUser } from "./utils";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Birddave",
@@ -20,8 +21,9 @@ export default async function RootLayout({ children }) {
       <body className={`${inter.className} w-full min-h-screen max-w-screen overflow-x-hidden`}>
         <header className="text-slate-700 w-full py-3 px-4">
           <div className="container mx-auto flex flex-row justify-between items-center">
-            <Link href="/" className="text-5xl">
-              BirdDave
+            <Link href="/" className="flex flex-row text-5xl justify-between items-stretch">
+              <Image src={"/logo.svg"} height={50} width={50} alt="" />
+              <div className="pl-1">BirdDave</div>
             </Link>
 
             <Link href="/upload">
