@@ -1,6 +1,7 @@
 import { SSTConfig } from "sst";
 import { Cognito, Bucket, NextjsSite, Table, use } from "sst/constructs";
 import { UserPool } from "aws-cdk-lib/aws-cognito";
+import { ObjectOwnership } from "aws-cdk-lib/aws-s3";
 
 const REGION = "us-east-1";
 const DOMAIN = "birddave.com";
@@ -49,12 +50,7 @@ export function Infra({ stack }) {
   const bucket = new Bucket(stack, "public", {
     cdk: {
       bucket: {
-        blockPublicAccess: {
-          blockPublicAcls: false,
-          blockPublicPolicy: false,
-          ignorePublicAcls: false,
-          restrictPublicBuckets: false,
-        },
+        objectOwnership: ObjectOwnership.BUCKET_OWNER_ENFORCED,
         publicReadAccess: true,
       },
     },
