@@ -104,6 +104,7 @@ export default {
     return {
       name: "birddave",
       region: REGION,
+      profile: "conhub",
     };
   },
   stacks(app) {
