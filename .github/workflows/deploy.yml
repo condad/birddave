@@ -1,9 +1,11 @@
 ---
 name: deploy
 on:
-  pull_request:
-    types:
-      - closed
+  push:
+    branches:
+      - "main"
+    paths:
+      - "**.ts"
 env:
   AWS_DEFAULT_REGION: us-east-1
   AWS_DEFAULT_OUTPUT: json
