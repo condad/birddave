@@ -24,7 +24,8 @@ export async function getCurrentUser(): Promise<User | null> {
       email: verifiedId.email as string,
       verified: verifiedId.email_verified,
     };
-  } catch {
+  } catch (e) {
+    console.error("Error verifying id token", e);
     return null;
   }
 }

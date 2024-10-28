@@ -1,6 +1,6 @@
 import { SSTConfig } from "sst";
 import { Cognito, Bucket, NextjsSite, Table, use } from "sst/constructs";
-import { UserPool } from "aws-cdk-lib/aws-cognito";
+import { UserPool, UserPoolIdentityProviderGoogle, ProviderAttribute } from "aws-cdk-lib/aws-cognito";
 import { ObjectOwnership } from "aws-cdk-lib/aws-s3";
 
 const REGION = "us-east-1";
@@ -20,8 +20,22 @@ export function Infra({ stack }) {
     signInAliases: {
       email: true,
     },
+    // userPoolName: `birddave-${stack.stage}`, TODO: Tear down and recreate the pools with this
     autoVerify: { email: true },
   });
+
+  const googleProvider = new UserPoolIdentityProviderGoogle(stack, "Google", {
+    userPool: pool,
+    clientId: "540371764473-v84uogpq7ivs8a50ls4ofmqpa3egk9q6.apps.googleusercontent.com",
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    scopes: ["openid", "email", "profile"],
+    attributeMapping: {
+      email: ProviderAttribute.GOOGLE_EMAIL,
+    },
+  });
+
+  pool.registerIdentityProvider(googleProvider);
+
   const client = pool.addClient("client", {
     oAuth: {
       flows: {
@@ -30,6 +44,7 @@ export function Infra({ stack }) {
       callbackUrls: [baseURL, `${baseURL}/tokens`],
     },
   });
+
   const domain = pool.addDomain("birddave", {
     cognitoDomain: {
       domainPrefix: cognitoDomain,

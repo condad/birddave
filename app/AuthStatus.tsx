@@ -7,6 +7,7 @@ export function AuthStatus({ currentUser }: { currentUser: User | null }) {
   const router = useRouter();
 
   function logout() {
+    // TODO: Call logout endpoint
     console.log("Logging out");
     document.cookie = "idToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     router.push("/");
