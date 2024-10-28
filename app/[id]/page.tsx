@@ -17,11 +17,9 @@ const dbClient = new DynamoDBClient();
 const cognitoClient = new CognitoIdentityProviderClient();
 
 async function deletePhoto(id: string): Promise<void> {
-  // todo: check the current user is the author of the photo
   "use server";
 
   const currentUser = await getCurrentUser();
-
   if (!currentUser) {
     throw new Error("Not authenticated");
   }
@@ -31,6 +29,10 @@ async function deletePhoto(id: string): Promise<void> {
       TableName: Table.table.tableName,
       Key: {
         id: id,
+      },
+      ConditionExpression: "username = :username",
+      ExpressionAttributeValues: {
+        ":username": currentUser.sub,
       },
     })
   );
