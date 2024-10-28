@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Modak, Inter } from "next/font/google";
 import "./globals.css";
 import { AuthStatus } from "./AuthStatus";
 import Link from "next/link";
 import { getCurrentUser } from "./utils";
-import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Birddave",
@@ -12,32 +11,37 @@ export const metadata: Metadata = {
 };
 
 const inter = Inter({ subsets: ["latin"] });
+const modak = Modak({ weight: "400", subsets: ["latin"] });
 
 export default async function RootLayout({ children }) {
   const currentUser = await getCurrentUser();
 
   return (
-    <html lang="en" className="w-full">
-      <body className={`${inter.className} w-full min-h-screen max-w-screen overflow-x-hidden`}>
-        <header className="text-slate-700 w-full py-3 px-4">
-          <div className="container mx-auto flex flex-row justify-between items-center">
-            <Link href="/" className="flex flex-row text-5xl justify-between items-stretch">
-              <Image src={"/logo.svg"} height={50} width={50} alt="" />
-              <div className="pl-1">BirdDave</div>
+    <html lang="en">
+      <body className={`${inter.className} container mx-auto px-4`}>
+        <header className="text-slate-700 py-3">
+          <div className="flex justify-between">
+            <Link href="/" className="text-4xl">
+              <div className={`${modak.className} pl-1`}>BirdDave</div>
             </Link>
 
             <Link href="/upload">
               <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Upload</button>
             </Link>
           </div>
-          <div className="container mx-auto flex flex-row justify-end">
-            <AuthStatus currentUser={currentUser} />
-          </div>
         </header>
 
-        <main className="my-2 w-full px-4 min-h-screen">{children}</main>
+        <div className="flex justify-end">
+          <AuthStatus currentUser={currentUser} />
+        </div>
 
-        <footer className="py-3 text-center">The end</footer>
+        <main className="my-2 min-h-screen">{children}</main>
+
+        <footer className="py-3 text-center">
+          <Link className="text-blue-500 hover:underline" href="https://github.com/condad/birddave">
+            I am interested in contributing to this project.
+          </Link>
+        </footer>
       </body>
     </html>
   );
