@@ -1,7 +1,10 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# BirdDave 🦆
 
-## Getting Started
+A web application for my dad and other bird photographers to upload and catagorize their bird pictures.
 
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) and deployed with [SST v2](https://v2.sst.dev/).
+
+## Running
 First, run the development server:
 
 ```bash
