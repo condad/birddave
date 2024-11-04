@@ -25,7 +25,7 @@ export default function Page() {
 
     try {
       const payload = await idVerifier.verify(idToken);
-      username = payload.sub;
+      username = payload["cognito:username"];
     } catch {
       throw new Error("Token invalid!");
     }

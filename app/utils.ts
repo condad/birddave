@@ -21,6 +21,7 @@ export async function getCurrentUser(): Promise<User | null> {
     const verifiedId = await idVerifier.verify(idTokenCookie.value);
     return {
       sub: verifiedId.sub,
+      username: verifiedId["cognito:username"],
       email: verifiedId.email as string,
       verified: verifiedId.email_verified,
     };
@@ -33,6 +34,7 @@ export async function getCurrentUser(): Promise<User | null> {
 export function parseUserCommandOutput(resp: GetUserCommandOutput | AdminGetUserCommandOutput): User {
   return {
     sub: resp.UserAttributes?.filter((attr) => attr.Name === "sub")[0]?.Value as string,
+    username: resp.UserAttributes?.filter((attr) => attr.Name === "cognito:username")[0]?.Value as string,
     email: resp.UserAttributes?.filter((attr) => attr.Name === "email")[0]?.Value as string,
     verified: Boolean(resp.UserAttributes?.filter((attr) => attr.Name === "email_verified")[0]?.Value),
   };

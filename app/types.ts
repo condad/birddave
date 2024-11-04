@@ -6,6 +6,7 @@ export type AuthTokens = {
 
 export type User = {
   sub: string;
+  username: string;
   email: string;
   verified: boolean;
 };

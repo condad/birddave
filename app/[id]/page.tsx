@@ -32,7 +32,7 @@ async function deletePhoto(id: string): Promise<void> {
       },
       ConditionExpression: "username = :username",
       ExpressionAttributeValues: {
-        ":username": currentUser.sub,
+        ":username": currentUser.username,
       },
     })
   );
