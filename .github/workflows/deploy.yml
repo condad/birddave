@@ -35,4 +35,4 @@ jobs:
           node-version: 20
       - run: npm ci
       - run: npm run lint -- --stage prod
-      - run: npm exec sst -- deploy --stage prod
+      - run: npm exec sst -- deploy Site --stage prod
