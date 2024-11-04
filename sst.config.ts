@@ -20,7 +20,7 @@ export function Infra({ stack }) {
     signInAliases: {
       email: true,
     },
-    // userPoolName: `birddave-${stack.stage}`, TODO: Tear down and recreate the pools with this
+    userPoolName: `birddave-${stack.stage}`,
     autoVerify: { email: true },
   });
 
