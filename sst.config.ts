@@ -112,6 +112,13 @@ export function Site({ stack }) {
     },
     permissions: ["cognito-idp:AdminGetUser"],
   });
+
+  stack.addOutputs({
+    SiteId: site.id,
+    SiteUrl: site.url,
+  });
+
+  return { site };
 }
 
 export default {
