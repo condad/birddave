@@ -36,4 +36,5 @@ jobs:
           node-version: 20
       - run: npm ci
       - run: npm run lint -- --stage prod
-      - run: npm exec sst -- deploy Site --stage prod
+      - run: npm exec sst -- build --stage prod --to dist
+      - run: npm exec sst -- deploy Site --stage prod --from dist
