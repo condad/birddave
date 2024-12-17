@@ -5,16 +5,15 @@ A web application for my dad and other bird photographers to upload and catagori
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) and deployed with [SST v2](https://v2.sst.dev/).
 
 ## Running
-First, run the development server:
-
 ```bash
+# The dev server requires the following env vars set
+export AWS_PROFILE=<aws-sso-profile-name> # ~/.aws/config
+export GOOGLE_CLIENT_SECRET=<google-client-secret> # https://console.cloud.google.com/apis/credentials/oauthclient
+
+# Deploy dev resources to AWS
+npx sst dev
+# Run local server (in a new process)
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

@@ -3,16 +3,24 @@ import { Cognito, Bucket, NextjsSite, Table, use } from "sst/constructs";
 import { UserPool, UserPoolIdentityProviderGoogle, ProviderAttribute } from "aws-cdk-lib/aws-cognito";
 import { ObjectOwnership } from "aws-cdk-lib/aws-s3";
 
-const REGION = "us-east-1";
+const AWS_PROFILE = process.env.AWS_PROFILE;
+const AWS_REGION = "us-east-1";
+const AWS_COGNITO_DOMAIN = "birddave";
+
 const DOMAIN = "birddave.com";
+
+const EBIRD_API_KEY = "jfekjedvescr";
+
+const GOOGLE_CLIENT_ID = "540371764473-v84uogpq7ivs8a50ls4ofmqpa3egk9q6.apps.googleusercontent.com";
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
 export function Infra({ stack }) {
   var baseURL = "http://localhost:3000";
-  var cognitoDomain = "birddave-dev";
+  var cognitoDomain = `${AWS_COGNITO_DOMAIN}-dev`;
 
   if (stack.stage === "prod") {
     baseURL = `https://${DOMAIN}`;
-    cognitoDomain = "birddave";
+    cognitoDomain = AWS_COGNITO_DOMAIN;
   }
 
   const pool = new UserPool(stack, "userPool", {
@@ -20,14 +28,14 @@ export function Infra({ stack }) {
     signInAliases: {
       email: true,
     },
-    userPoolName: `birddave-${stack.stage}`,
+    userPoolName: `${AWS_COGNITO_DOMAIN}-${stack.stage}`,
     autoVerify: { email: true },
   });
 
   const googleProvider = new UserPoolIdentityProviderGoogle(stack, "Google", {
     userPool: pool,
-    clientId: "540371764473-v84uogpq7ivs8a50ls4ofmqpa3egk9q6.apps.googleusercontent.com",
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    clientId: GOOGLE_CLIENT_ID,
+    clientSecret: GOOGLE_CLIENT_SECRET,
     scopes: ["openid", "email", "profile"],
     attributeMapping: {
       email: ProviderAttribute.GOOGLE_EMAIL,
@@ -45,7 +53,7 @@ export function Infra({ stack }) {
     },
   });
 
-  const domain = pool.addDomain("birddave", {
+  const domain = pool.addDomain(AWS_COGNITO_DOMAIN, {
     cognitoDomain: {
       domainPrefix: cognitoDomain,
     },
@@ -85,7 +93,7 @@ export function Infra({ stack }) {
     ClientId: client.userPoolClientId,
     CognitoSignInUrl: signInUrl,
     BucketName: bucket.bucketName,
-    Region: REGION,
+    Region: AWS_REGION,
   });
 
   return {
@@ -106,7 +114,7 @@ export function Site({ stack }) {
     bind: [bucket, table],
     environment: {
       NEXT_PUBLIC_SIGN_IN_URL: signInUrl,
-      NEXT_PUBLIC_EBIRD_KEY: "jfekjedvescr",
+      NEXT_PUBLIC_EBIRD_KEY: EBIRD_API_KEY,
       COGNITO_USER_POOL_ID: cognitoPool.userPoolId,
       COGNITO_CLIENT_ID: cognitoClient.userPoolClientId,
     },
@@ -125,8 +133,8 @@ export default {
   config(_input) {
     return {
       name: "birddave",
-      region: REGION,
-      profile: "conhub",
+      region: AWS_REGION,
+      profile: AWS_PROFILE,
     };
   },
   stacks(app) {
