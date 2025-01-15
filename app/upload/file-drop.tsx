@@ -99,7 +99,7 @@ export default function FileDrop({ uploadPicture }) {
       {isModalOpen &&
         createPortal(
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-6 rounded shadow-lg">
+            <div className="bg-white p-6 w-full h-full md:w-2/3 md:h-4/5 lg:w-1/3 lg:h-4/5 rounded shadow-lg overflow-y-auto">
               <div className="flex justify-between mb-4">
                 <h2 className="text-xl font-bold">File Uploaded</h2>
                 <span
@@ -115,7 +115,7 @@ export default function FileDrop({ uploadPicture }) {
                 className="max-w-screen-md mx-auto my-20 bg-slate-100 shadow-md rounded py-8 px-10"
               >
                 <p>{file?.name}</p>
-                <div className="relative w-96 h-96 mx-auto">
+                <div className="relative h-96 w-full mx-auto">
                   <Cropper
                     image={imageSrc as string}
                     crop={cropPosition}
@@ -128,7 +128,7 @@ export default function FileDrop({ uploadPicture }) {
                   />
                 </div>
 
-                <label htmlFor="species" className="block text-gray-700 text-sm font-bold mb-2">
+                <label htmlFor="species" className="block text-gray-700 text-sm my-10 font-bold mb-2">
                   Species
                 </label>
                 <AsyncSelect
