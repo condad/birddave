@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { createPortal } from "react-dom";
 import Cropper from "react-easy-crop";
 import AsyncSelect from "react-select/async";
+import { v4 as uuidv4 } from "uuid";
 import { getCroppedImg } from "./utils";
 
 async function promiseOptions(inputValue: string): Promise<Record<string, string>[]> {
@@ -24,7 +25,7 @@ async function promiseOptions(inputValue: string): Promise<Record<string, string
   return data.map((species: Record<string, string>) => ({ value: species.name, label: species.name }));
 }
 
-export default function FileDrop({ uploadPicture }) {
+export default function FileDrop({ uploadPicture, getPresignedUrl }) {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -51,7 +52,6 @@ export default function FileDrop({ uploadPicture }) {
 
   const onCropComplete = async (_croppedArea, croppedAreaPixels) => {
     const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels, 0);
-    console.log("done croppping img:", { croppedImage });
     setCroppedImage(croppedImage);
   };
 
@@ -78,11 +78,26 @@ export default function FileDrop({ uploadPicture }) {
   };
 
   const submitForm = async (formData: FormData) => {
+    const key = uuidv4();
+
     formData.append("file", croppedImage as Blob);
+    formData.append("key", key);
+
+    const presignedUrl = await getPresignedUrl(key);
+
+    const image = await fetch(presignedUrl, {
+      body: file,
+      method: "PUT",
+      headers: {
+        "Content-Type": ".jpg",
+        "Content-Disposition": `attachment; filename="${key}"`,
+      },
+    });
 
     try {
       await uploadPicture(formData);
       alert("File uploaded successfully");
+      closeModal();
     } catch (error) {
       alert("Error uploading file");
     }

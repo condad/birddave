@@ -3,11 +3,25 @@ import { Table } from "sst/node/table";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import { v4 as uuidv4 } from "uuid";
 import { idVerifier } from "../utils";
 import { cookies } from "next/headers";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import FileDrop from "./file-drop";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { UUID } from "crypto";
+
+const s3Client = new S3Client();
+const dbClient = new DynamoDBClient();
+
+async function getPresignedUrl(key: string): Promise<string> {
+  "use server";
+  const command = new PutObjectCommand({
+    Bucket: Bucket.public.bucketName,
+    Key: key,
+  });
+
+  return await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+}
 
 async function uploadPicture(formData: FormData): Promise<void> {
   "use server";
@@ -17,6 +31,7 @@ async function uploadPicture(formData: FormData): Promise<void> {
   const cookieStore = cookies();
   const idTokenCookie = cookieStore.get("idToken") as RequestCookie;
 
+  const key = formData.get("key") as UUID;
   const file = formData.get("file") as File;
   const species = formData.get("species") as string;
   const idToken = idTokenCookie.value;
@@ -32,21 +47,10 @@ async function uploadPicture(formData: FormData): Promise<void> {
   const fileArrayBuffer = await file.arrayBuffer();
   const fileBuffer = Buffer.from(fileArrayBuffer);
 
-  const id = uuidv4();
-
-  const s3Client = new S3Client();
-  const command = new PutObjectCommand({
-    Body: fileBuffer,
-    Bucket: Bucket.public.bucketName,
-    Key: id,
-    ContentType: file.type,
-  });
-
-  const dbClient = new DynamoDBClient();
   const insertCommand = new PutCommand({
     TableName: Table.table.tableName,
     Item: {
-      id: id,
+      id: key,
       species: scientificName.toLowerCase(),
       commonName: commonName,
       uploadedAt: new Date().toISOString(),
@@ -54,15 +58,13 @@ async function uploadPicture(formData: FormData): Promise<void> {
     },
   });
 
-  // TODO: Run in parallel
-  const s3Response = await s3Client.send(command);
   const dbResponse = await dbClient.send(insertCommand);
 }
 
 export default function Page() {
   return (
     <div className="container mx-auto">
-      <FileDrop uploadPicture={uploadPicture} />
+      <FileDrop uploadPicture={uploadPicture} getPresignedUrl={getPresignedUrl} />
     </div>
   );
 }
