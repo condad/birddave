@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Modak, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthStatus } from "./AuthStatus";
 import Link from "next/link";
@@ -11,7 +11,6 @@ export const metadata: Metadata = {
 };
 
 const inter = Inter({ subsets: ["latin"] });
-const modak = Modak({ weight: "400", subsets: ["latin"] });
 
 export default async function RootLayout({ children }) {
   const currentUser = await getCurrentUser();
@@ -22,7 +21,7 @@ export default async function RootLayout({ children }) {
         <header className="text-slate-700 py-3">
           <div className="flex justify-between">
             <Link href="/" className="text-4xl">
-              <div className={`${modak.className} pl-1`}>BirdDave</div>
+              <div className={`${inter.className} font-bold`}>BirdDave</div>
             </Link>
 
             <Link href="/upload">
