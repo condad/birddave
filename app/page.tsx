@@ -24,10 +24,7 @@ export default async function Home() {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 w-full">
         {birds.map((bird) => (
           <Link href={`/${bird.id}`} passHref legacyBehavior key={bird.id}>
-            <a
-              key={bird.id}
-              className="block max-w-full rounded-lg w-full dark:bg-gray-700 overflow-hidden relative h-56 object-cover"
-            >
+            <a key={bird.id} className="block relative aspect-square rounded-lg dark:bg-gray-700 overflow-hidden">
               <Image
                 className="object-cover hover:opacity-50"
                 src={`${publicRuntimeConfig.bucketUrl}/${bird.id}`}

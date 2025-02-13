@@ -17,7 +17,7 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <body className={`${inter.className} container mx-auto px-4`}>
+      <body className={`${inter.className} container mx-auto 2xl:px-64 xl:px-32`}>
         <header className="text-slate-700 py-3">
           <div className="flex justify-between">
             <Link href="/" className="text-4xl">
