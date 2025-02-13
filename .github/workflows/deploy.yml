@@ -11,6 +11,7 @@ env:
   AWS_DEFAULT_REGION: us-east-1
   AWS_DEFAULT_OUTPUT: json
   GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+  EBIRD_API_KEY: ${{ secrets.EBIRD_API_KEY }}
 
 jobs:
   deploy-site:

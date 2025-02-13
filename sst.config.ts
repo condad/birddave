@@ -9,7 +9,7 @@ const AWS_COGNITO_DOMAIN = "birddave";
 
 const DOMAIN = "birddave.com";
 
-const EBIRD_API_KEY = "jfekjedvescr";
+const EBIRD_API_KEY = process.env.EBIRD_API_KEY!;
 
 const GOOGLE_CLIENT_ID = "540371764473-v84uogpq7ivs8a50ls4ofmqpa3egk9q6.apps.googleusercontent.com";
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
