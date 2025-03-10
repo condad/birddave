@@ -26,55 +26,30 @@ async function promiseOptions(inputValue: string): Promise<Record<string, string
 }
 
 export default function FileDrop({ uploadPicture, getPresignedUrl }) {
-  const [imageSrc, setImageSrc] = useState<string | null>(null);
-  const [file, setFile] = useState<File | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [croppedImage, setCroppedImage] = useState<Blob | null>(null);
   const [cropPosition, setCropPosition] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [croppedImage, setCroppedImage] = useState<Blob | null>(null);
 
-  function readFile(file) {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.addEventListener("load", () => resolve(reader.result), false);
-      reader.readAsDataURL(file);
-    });
-  }
+  const handleFileSelection = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files![0];
 
-  const onFileChange = async (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      let imageDataUrl = (await readFile(file)) as string;
-
-      setImageSrc(imageDataUrl);
+    if (!selectedFile || selectedFile.type != "image/jpeg") {
+      return alert("Please upload a JPG file.");
     }
-  };
 
-  const onCropComplete = async (_croppedArea, croppedAreaPixels) => {
-    const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels, 0);
-    setCroppedImage(croppedImage);
-  };
-
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    console.log("typeof file", selectedFile, typeof selectedFile);
-
-    if (selectedFile) {
-      let imageDataUrl = (await readFile(selectedFile)) as string;
-
-      setImageSrc(imageDataUrl);
-    }
-    if (selectedFile && selectedFile.type === "image/jpeg") {
-      setFile(selectedFile);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImageSrc(reader.result as string);
       setIsModalOpen(true);
-    } else {
-      alert("Please upload a JPG file.");
-    }
+    };
+    reader.readAsDataURL(selectedFile);
   };
 
   const closeModal = () => {
+    setImageSrc(null);
     setIsModalOpen(false);
-    setFile(null);
   };
 
   const submitForm = async (formData: FormData) => {
@@ -85,8 +60,8 @@ export default function FileDrop({ uploadPicture, getPresignedUrl }) {
 
     const presignedUrl = await getPresignedUrl(key);
 
-    const image = await fetch(presignedUrl, {
-      body: file,
+    await fetch(presignedUrl, {
+      body: croppedImage,
       method: "PUT",
       headers: {
         "Content-Type": ".jpg",
@@ -99,8 +74,13 @@ export default function FileDrop({ uploadPicture, getPresignedUrl }) {
       alert("File uploaded successfully");
       closeModal();
     } catch (error) {
-      alert("Error uploading file");
+      alert(`Error uploading file ${error}`);
     }
+  };
+
+  const onCropComplete = async (_croppedArea, croppedAreaPixels) => {
+    const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels, 0);
+    setCroppedImage(croppedImage);
   };
 
   return (
@@ -108,7 +88,7 @@ export default function FileDrop({ uploadPicture, getPresignedUrl }) {
       <input
         type="file"
         accept=".jpg, .jpeg"
-        onChange={handleFileChange}
+        onChange={handleFileSelection}
         className="mb-4 p-2 border border-gray-300 rounded"
       />
       {isModalOpen &&
@@ -126,10 +106,8 @@ export default function FileDrop({ uploadPicture, getPresignedUrl }) {
               </div>
               <form
                 action={submitForm}
-                onChange={onFileChange}
                 className="max-w-screen-md mx-auto my-20 bg-slate-100 shadow-md rounded py-8 px-10"
               >
-                <p>{file?.name}</p>
                 <div className="relative aspect-square w-full mx-auto">
                   <Cropper
                     image={imageSrc as string}
