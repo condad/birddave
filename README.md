@@ -11,13 +11,9 @@ export AWS_PROFILE=<aws-sso-profile-name> # ~/.aws/config
 export GOOGLE_CLIENT_SECRET=<google-client-secret> # https://console.cloud.google.com/apis/credentials/oauthclient
 
 # Deploy dev resources to AWS
-npx sst dev # or
-npx sst dev --profile=<AWS_PROFILE> # if AWS_PROFILE not set
+npx sst dev
 # Run local server (in a new process)
-npm run dev # or
-npm run dev -- --profile=<AWS_PROFILE> # if AWS_PROFILE not set
-# Lint
-npm run dev -- --profile=<AWS_PROFILE> # if AWS_PROFILE not set
+npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
