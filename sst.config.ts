@@ -65,7 +65,7 @@ export function Infra({ stack }) {
 
   const auth = new Cognito(stack, "auth", {
     cdk: {
-      userPool: pool,
+      userPool: pool as any, // Due to incompatibility between SST and CDK types
       userPoolClient: client,
     },
   });
@@ -119,6 +119,7 @@ export function Site({ stack }) {
       COGNITO_CLIENT_ID: cognitoClient.userPoolClientId,
     },
     permissions: ["cognito-idp:AdminGetUser"],
+    runtime: "nodejs22.x",
   });
 
   stack.addOutputs({
