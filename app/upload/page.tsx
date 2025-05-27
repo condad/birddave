@@ -32,7 +32,6 @@ async function uploadPicture(formData: FormData): Promise<void> {
   const idTokenCookie = cookieStore.get("idToken") as RequestCookie;
 
   const key = formData.get("key") as UUID;
-  const file = formData.get("file") as File;
   const species = formData.get("species") as string;
   const idToken = idTokenCookie.value;
   const [commonName, scientificName] = species.split(" - ");
@@ -43,9 +42,6 @@ async function uploadPicture(formData: FormData): Promise<void> {
   } catch {
     throw new Error("Token invalid!");
   }
-
-  const fileArrayBuffer = await file.arrayBuffer();
-  const fileBuffer = Buffer.from(fileArrayBuffer);
 
   const insertCommand = new PutCommand({
     TableName: Table.table.tableName,

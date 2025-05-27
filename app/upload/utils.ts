@@ -31,13 +31,13 @@ export async function getCroppedImg(
   pixelCrop,
   rotation = 0,
   flip = { horizontal: false, vertical: false }
-): Promise<Blob | null> {
+): Promise<string> {
   const image = await createImage(imageSrc);
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
 
   if (!ctx) {
-    return null;
+    throw new Error("Failed to get context");
   }
 
   const rotRad = getRadianAngle(rotation);
@@ -63,7 +63,7 @@ export async function getCroppedImg(
   const croppedCtx = croppedCanvas.getContext("2d");
 
   if (!croppedCtx) {
-    return null;
+    throw new Error("Failed to get canvas context");
   }
 
   // Set the size of the cropped canvas
@@ -84,8 +84,5 @@ export async function getCroppedImg(
   );
 
   // As Base64 string
-  // return croppedCanvas.toDataURL('image/jpeg');
-
-  // As a blob
-  return await new Promise((resolve) => croppedCanvas.toBlob(resolve));
+  return croppedCanvas.toDataURL("image/jpeg");
 }

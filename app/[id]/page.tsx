@@ -24,19 +24,22 @@ async function deletePhoto(id: string): Promise<void> {
     throw new Error("Not authenticated");
   }
 
-  await dbClient.send(
-    new DeleteCommand({
-      TableName: Table.table.tableName,
-      Key: {
-        id: id,
-      },
-      ConditionExpression: "username = :username",
-      ExpressionAttributeValues: {
-        ":username": currentUser.username,
-      },
-    })
-  );
-  await s3Client.send(new DeleteObjectCommand({ Bucket: Bucket.public.bucketName, Key: id }));
+  await Promise.all([
+    dbClient.send(
+      new DeleteCommand({
+        TableName: Table.table.tableName,
+        Key: {
+          id: id,
+        },
+        ConditionExpression: "username = :username",
+        ExpressionAttributeValues: {
+          ":username": currentUser.username,
+        },
+      })
+    ),
+    s3Client.send(new DeleteObjectCommand({ Bucket: Bucket.public.bucketName, Key: id })),
+    s3Client.send(new DeleteObjectCommand({ Bucket: Bucket.public.bucketName, Key: `${id}-thumbnail` })),
+  ]);
 }
 
 export default async function Page({ params }) {

@@ -27,10 +27,27 @@ async function promiseOptions(inputValue: string): Promise<Record<string, string
 
 export default function FileDrop({ uploadPicture, getPresignedUrl }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [imageSrc, setImageSrc] = useState<string | null>(null);
-  const [croppedImage, setCroppedImage] = useState<Blob | null>(null);
+  const [originalImage, setOriginalImage] = useState<string>(""); // Data URL of the original image
+  const [thumbnailImage, setThumbnailImage] = useState<string>(""); // Data URL of the cropped image
   const [cropPosition, setCropPosition] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+
+  const uploadImagetoBucket = async (imageUrl: string, key: string): Promise<string> => {
+    const response = await fetch(imageUrl);
+    const imageBlob = await response.blob();
+    const presignedUrl = await getPresignedUrl(key);
+
+    await fetch(presignedUrl, {
+      method: "PUT",
+      body: imageBlob,
+      headers: {
+        "Content-Type": "image/jpg",
+        "Content-Disposition": `attachment; filename="${key}"`,
+      },
+    });
+
+    return presignedUrl;
+  };
 
   const handleFileSelection = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files![0];
@@ -41,33 +58,28 @@ export default function FileDrop({ uploadPicture, getPresignedUrl }) {
 
     const reader = new FileReader();
     reader.onload = () => {
-      setImageSrc(reader.result as string);
+      setOriginalImage(reader.result as string);
       setIsModalOpen(true);
     };
     reader.readAsDataURL(selectedFile);
   };
 
   const closeModal = () => {
-    setImageSrc(null);
+    setOriginalImage("");
     setIsModalOpen(false);
   };
 
   const submitForm = async (formData: FormData) => {
     const key = uuidv4();
-
-    formData.append("file", croppedImage as Blob);
     formData.append("key", key);
 
-    const presignedUrl = await getPresignedUrl(key);
+    const [originalImagePresignedUrl, croppedImagePresignedUrl] = await Promise.all([
+      uploadImagetoBucket(originalImage, key),
+      uploadImagetoBucket(thumbnailImage, `${key}-thumbnail`),
+    ]);
 
-    await fetch(presignedUrl, {
-      body: croppedImage,
-      method: "PUT",
-      headers: {
-        "Content-Type": ".jpg",
-        "Content-Disposition": `attachment; filename="${key}"`,
-      },
-    });
+    console.log("Uploading original image to:", originalImagePresignedUrl);
+    console.log("Uploading cropped image to:", croppedImagePresignedUrl);
 
     try {
       await uploadPicture(formData);
@@ -79,8 +91,8 @@ export default function FileDrop({ uploadPicture, getPresignedUrl }) {
   };
 
   const onCropComplete = async (_croppedArea, croppedAreaPixels) => {
-    const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels, 0);
-    setCroppedImage(croppedImage);
+    const croppedImage = await getCroppedImg(originalImage, croppedAreaPixels, 0);
+    setThumbnailImage(croppedImage);
   };
 
   return (
@@ -131,7 +143,7 @@ export default function FileDrop({ uploadPicture, getPresignedUrl }) {
               >
                 <div className="relative aspect-square w-full mx-auto">
                   <Cropper
-                    image={imageSrc as string}
+                    image={originalImage as string}
                     crop={cropPosition}
                     zoom={zoom}
                     aspect={1 / 1}

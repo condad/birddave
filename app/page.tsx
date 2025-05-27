@@ -27,7 +27,8 @@ export default async function Home() {
             <a key={bird.id} className="block relative aspect-square rounded-lg dark:bg-gray-700 overflow-hidden">
               <Image
                 className="object-cover hover:opacity-50"
-                src={`${publicRuntimeConfig.bucketUrl}/${bird.id}`}
+                src={`${publicRuntimeConfig.bucketUrl}/${bird.id}-thumbnail`}
+                quality={100}
                 alt=""
                 fill
               />
