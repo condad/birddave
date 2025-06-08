@@ -28,33 +28,43 @@ async function uploadPicture(formData: FormData): Promise<void> {
 
   let username: string;
 
-  const cookieStore = cookies();
-  const idTokenCookie = cookieStore.get("idToken") as RequestCookie;
-
-  const key = formData.get("key") as UUID;
-  const species = formData.get("species") as string;
-  const idToken = idTokenCookie.value;
-  const [commonName, scientificName] = species.split(" - ");
-
   try {
+    const cookieStore = cookies();
+    const idTokenCookie = cookieStore.get("idToken") as RequestCookie;
+    const idToken = idTokenCookie.value;
     const payload = await idVerifier.verify(idToken);
+
     username = payload["cognito:username"];
   } catch {
     throw new Error("Token invalid!");
   }
 
+  // Validate species input
+  const species = formData.get("species") as string;
+  const [commonName, scientificName] = species.split(" - ");
+
+  // Get crop position
+  const cropPositionX = JSON.parse(formData.get("cropPosition") as string).x;
+  const cropPositionY = JSON.parse(formData.get("cropPosition") as string).y;
+
   const insertCommand = new PutCommand({
     TableName: Table.table.tableName,
     Item: {
-      id: key,
+      id: formData.get("key") as UUID,
       species: scientificName.toLowerCase(),
       commonName: commonName,
       uploadedAt: new Date().toISOString(),
+      originalWidth: Number(formData.get("originalWidth")),
+      originalHeight: Number(formData.get("originalHeight")),
+      thumbnailWidth: Number(formData.get("thumbnailWidth")),
+      thumbnailHeight: Number(formData.get("thumbnailHeight")),
+      cropPositionX: Number(cropPositionX),
+      cropPositionY: Number(cropPositionY),
       username,
     },
   });
 
-  const dbResponse = await dbClient.send(insertCommand);
+  await dbClient.send(insertCommand);
 }
 
 export default function Page() {

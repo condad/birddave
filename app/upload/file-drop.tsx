@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import Cropper from "react-easy-crop";
 import AsyncSelect from "react-select/async";
 import { v4 as uuidv4 } from "uuid";
-import { getCroppedImg } from "./utils";
+import { createImage, getCroppedImg } from "./utils";
 
 async function promiseOptions(inputValue: string): Promise<Record<string, string>[]> {
   if (inputValue.length < 3) {
@@ -72,8 +72,14 @@ export default function FileDrop({ uploadPicture, getPresignedUrl }) {
   const submitForm = async (formData: FormData) => {
     const key = uuidv4();
     formData.append("key", key);
-    // TODO: Include the cropped dimensions in the form data
-    // TODO: Include the original dimensions in the form data
+
+    const [originalMeta, thumbnailMeta] = await Promise.all([createImage(originalImage), createImage(thumbnailImage)]);
+
+    formData.append("originalWidth", originalMeta.naturalWidth.toString());
+    formData.append("originalHeight", originalMeta.naturalHeight.toString());
+    formData.append("thumbnailWidth", thumbnailMeta.naturalWidth.toString());
+    formData.append("thumbnailHeight", thumbnailMeta.naturalHeight.toString());
+    formData.append("cropPosition", JSON.stringify(cropPosition));
 
     const [originalImagePresignedUrl, croppedImagePresignedUrl] = await Promise.all([
       uploadImagetoBucket(originalImage, key),
@@ -95,6 +101,7 @@ export default function FileDrop({ uploadPicture, getPresignedUrl }) {
   const onCropComplete = async (_croppedArea, croppedAreaPixels) => {
     console.debug("Cropped area:", _croppedArea);
     console.debug("Cropped area pixels:", croppedAreaPixels);
+    console.debug("Crop position:", cropPosition);
 
     const croppedImage = await getCroppedImg(originalImage, croppedAreaPixels, 0);
     setThumbnailImage(croppedImage);
