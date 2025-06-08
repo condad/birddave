@@ -72,6 +72,8 @@ export default function FileDrop({ uploadPicture, getPresignedUrl }) {
   const submitForm = async (formData: FormData) => {
     const key = uuidv4();
     formData.append("key", key);
+    // TODO: Include the cropped dimensions in the form data
+    // TODO: Include the original dimensions in the form data
 
     const [originalImagePresignedUrl, croppedImagePresignedUrl] = await Promise.all([
       uploadImagetoBucket(originalImage, key),
@@ -91,6 +93,9 @@ export default function FileDrop({ uploadPicture, getPresignedUrl }) {
   };
 
   const onCropComplete = async (_croppedArea, croppedAreaPixels) => {
+    console.debug("Cropped area:", _croppedArea);
+    console.debug("Cropped area pixels:", croppedAreaPixels);
+
     const croppedImage = await getCroppedImg(originalImage, croppedAreaPixels, 0);
     setThumbnailImage(croppedImage);
   };
@@ -111,9 +116,9 @@ export default function FileDrop({ uploadPicture, getPresignedUrl }) {
           >
             <path
               stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
               d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
             />
           </svg>
@@ -127,7 +132,7 @@ export default function FileDrop({ uploadPicture, getPresignedUrl }) {
       {isModalOpen &&
         createPortal(
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-6 w-full h-full md:w-2/3 md:h-4/5 lg:w-2/3 lg:h-4/5 rounded shadow-lg overflow-y-auto">
+            <div className="bg-white p-6 w-full h-full md:w-3/4 md:h-4/5 lg:w-3/5 lg:h-5/6 rounded shadow-lg">
               <div className="flex justify-between mb-4">
                 <h2 className="text-xl font-bold">File Uploaded</h2>
                 <span
@@ -137,11 +142,8 @@ export default function FileDrop({ uploadPicture, getPresignedUrl }) {
                   &times;
                 </span>
               </div>
-              <form
-                action={submitForm}
-                className="max-w-screen-md mx-auto my-20 bg-slate-100 shadow-md rounded py-8 px-10"
-              >
-                <div className="relative aspect-square w-full mx-auto">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="relative w-full h-full aspect-square">
                   <Cropper
                     image={originalImage as string}
                     crop={cropPosition}
@@ -153,26 +155,30 @@ export default function FileDrop({ uploadPicture, getPresignedUrl }) {
                     onZoomChange={setZoom}
                   />
                 </div>
+                <form
+                  action={submitForm}
+                  className="w-full lg:w-1/2 md:w-1/2 flex flex-col bg-slate-100 shadow-md rounded py-8 px-6"
+                >
+                  <label htmlFor="species" className="block text-gray-700 text-sm font-bold mb-2">
+                    Species
+                  </label>
+                  <AsyncSelect
+                    classNames={{
+                      control: () => "w-full py-1 px-2 mb-4 text-gray-700 focus:outline-none focus:shadow-outline",
+                    }}
+                    name="species"
+                    cacheOptions
+                    loadOptions={promiseOptions}
+                    isClearable={true}
+                  />
 
-                <label htmlFor="species" className="block text-gray-700 text-sm my-10 font-bold mb-2">
-                  Species
-                </label>
-                <AsyncSelect
-                  classNames={{
-                    control: () => "w-full py-1 px-2 mb-4 text-gray-700 focus:outline-none focus:shadow-outline",
-                  }}
-                  name="species"
-                  cacheOptions
-                  loadOptions={promiseOptions}
-                  isClearable={true}
-                />
-
-                <input
-                  type="submit"
-                  className="mt-5 shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
-                  value="Submit"
-                />
-              </form>
+                  <input
+                    type="submit"
+                    className="mt-5 shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+                    value="Submit"
+                  />
+                </form>
+              </div>
             </div>
           </div>,
           document.body
